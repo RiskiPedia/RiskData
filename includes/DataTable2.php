@@ -577,7 +577,11 @@ class DataTable2 {
 					'datatable2-error-expensive-function' );
 			}
 
-                        $jsVarName = $frame->expand( $args[0] );
+                        /** sanitize the javascript variable name; prefix with dt2_
+                         * so no monkeying around trying to modify other window. properties.
+                         * And only allow letters, numbers, underscores in the name.
+                         */
+                        $jsVarName = "dt2_" . preg_replace('/[^a-zA-Z0-9_]/', '', $frame->expand( $args[0] ));
 			$table = DataTable2Parser::table2title(
 				$frame->expand( $args[1] ) );
 			$where = $frame->expand( $args[2] );
@@ -586,16 +590,15 @@ class DataTable2 {
 			$data = $this->database_->select( $table, $where,
 				false, $pages, __METHOD__ );
 
-
-                        $wikitext = "<script>\n";
-                        $wikitext .= "window.dt2" . $jsVarName . "=[];\n";
+                        $scripttag = "<script>\n";
+                        $scripttag .= "window." . $jsVarName . "=[];\n";
                         if ( $data ) {
                                 foreach ( $data as $row ) {
-                                        $objText = json_encode($row); /* TODO THE RIGHT THING */
-                                        $wikitext .= "window.dt2" . $jsVarName . ".push(" . $objText . ");\n";
+                                        $objText = json_encode($row);
+                                        $scripttag .= "window." . $jsVarName . ".push(" . $objText . ");\n";
                                 }
                         }
-                        $wikitext .= "<\script>\n";
+                        $scripttag .= "</script>\n";
 
 			/** Call DataTable2::addDependencies(). */
 			if ( $pages ) {
@@ -603,12 +606,10 @@ class DataTable2 {
 					DataTable2Parser::table2title($table));
 			}
 
-			/** Parse the wikitext, or display it verbatim for
-			 *	debugging.
-			 */
-			return isset( $args['debug'] )
-				? "<pre>$wikitext</pre>"
-				: $parser->recursiveTagParse( $wikitext, $frame );
+                        $parserOutput = $parser->getOutput();
+                        $parserOutput->addHeadItem($scripttag);
+
+                        return "";
 		} catch ( DataTable2Exception $e ) {
 			return $e->getHTML();
 		}
