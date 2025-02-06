@@ -277,6 +277,8 @@ class DataTable2 {
 		$parser->setFunctionHook( 'dt2-lastget',
 			[ $this, 'renderLastGet' ],
 			SFH_OBJECT_ARGS );
+		$parser->setFunctionHook( 'dt2-table2JS',
+                        [ $this, 'renderTable2JS' ], SFH_OBJECT_ARGS );
 
 		/**
 		 * Add Scribunto support if the [Scribunto
@@ -522,6 +524,83 @@ class DataTable2 {
 				$this->addDependencies( $parser, $pages,
 					DataTable2Parser::table2title(
 						$dataParser->getArg( 'table' ) ) );
+			}
+
+			/** Parse the wikitext, or display it verbatim for
+			 *	debugging.
+			 */
+			return isset( $args['debug'] )
+				? "<pre>$wikitext</pre>"
+				: $parser->recursiveTagParse( $wikitext, $frame );
+		} catch ( DataTable2Exception $e ) {
+			return $e->getHTML();
+		}
+	}
+
+	/**
+	 * @brief Render a \<dt2-table2JS>
+	 * (https://www.mediawiki.org/wiki/Manual:Parser functions).
+	 *
+	 * @param Parser $parser The parent parser.
+	 *
+	 * @param PPFrame $frame The parent frame.
+	 *
+	 * @param array $args PPNode objects for the template arguments.
+	 *
+	 * @return string HTML text.
+         *
+	 * @xrefitem userdoc "User Documentation" "User Documentation" The
+	 * <b>dt2-table2JS</b> parser function takes three or more arguments:
+	 * - The name of the JavaScript array that will hold the data.
+	 * - The <i>table</i> defined with the \<datatable2> tag where the
+	 * data should be taken from.
+	 * - The <i>where</i> clause, that should select one or more records.
+	 * - Optionally further arguments that are appended to those selected
+	 * from the database.
+	 */
+	public function renderTable2JS( Parser $parser,	PPFrame $frame, $args ) {
+		try {
+			/** Return error message if less then 3 arguments are
+			 *	provided.
+			 */
+			if ( count( $args ) < 3 ) {
+				throw new DataTable2Exception(
+					'datatable2-error-too-few-args',
+					'dt2-table2JS', count( $args ), 3 );
+			}
+
+			/** Increment the [expensive function count]
+			 * (https://www.mediawiki.org/wiki/Manual:$wgExpensiveParserFunctionLimit).
+			 */
+			if ( !$parser->incrementExpensiveFunctionCount() ) {
+				throw new DataTable2Exception(
+					'datatable2-error-expensive-function' );
+			}
+
+                        $jsVarName = $frame->expand( $args[0] );
+			$table = DataTable2Parser::table2title(
+				$frame->expand( $args[1] ) );
+			$where = $frame->expand( $args[2] );
+
+			/** Get unsorted data from the database. */
+			$data = $this->database_->select( $table, $where,
+				false, $pages, __METHOD__ );
+
+
+                        $wikitext = "<script>\n";
+                        $wikitext .= "window.dt2" . $jsVarName . "=[];\n";
+                        if ( $data ) {
+                                foreach ( $data as $row ) {
+                                        $objText = json_encode($row); /* TODO THE RIGHT THING */
+                                        $wikitext .= "window.dt2" . $jsVarName . ".push(" . $objText . ");\n";
+                                }
+                        }
+                        $wikitext .= "<\script>\n";
+
+			/** Call DataTable2::addDependencies(). */
+			if ( $pages ) {
+				$this->addDependencies( $parser, $pages,
+					DataTable2Parser::table2title($table));
 			}
 
 			/** Parse the wikitext, or display it verbatim for

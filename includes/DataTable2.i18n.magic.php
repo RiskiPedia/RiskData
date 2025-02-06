@@ -21,5 +21,6 @@ $magicWords = [];
 $magicWords['en'] = [
 	'dt2-expand' => [ 0, 'dt2-expand' ],
 	'dt2-get' => [ 0, 'dt2-get' ],
-	'dt2-lastget' => [ 0, 'dt2-lastget' ]
+	'dt2-lastget' => [ 0, 'dt2-lastget' ],
+	'dt2-table2JS' => [ 0, 'dt2-table2JS' ]
 ];
