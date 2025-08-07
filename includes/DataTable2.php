@@ -277,8 +277,6 @@ class DataTable2 {
 		$parser->setFunctionHook( 'dt2-lastget',
 			[ $this, 'renderLastGet' ],
 			SFH_OBJECT_ARGS );
-		$parser->setFunctionHook( 'dt2-table2JS',
-                        [ $this, 'renderTable2JS' ] );
 
 		/**
 		 * Add Scribunto support if the [Scribunto
@@ -532,73 +530,6 @@ class DataTable2 {
 			return isset( $args['debug'] )
 				? "<pre>$wikitext</pre>"
 				: $parser->recursiveTagParse( $wikitext, $frame );
-		} catch ( DataTable2Exception $e ) {
-			return $e->getHTML();
-		}
-	}
-
-	/**
-	 * @brief Render a \<dt2-table2JS>
-	 * (https://www.mediawiki.org/wiki/Manual:Parser functions).
-	 *
-	 * @param Parser $parser The parent parser.
-	 *
-	 * @param PPFrame $frame The parent frame.
-	 *
-	 * @param array $args PPNode objects for the template arguments.
-	 *
-	 * @return string HTML text.
-         *
-	 * @xrefitem userdoc "User Documentation" "User Documentation" The
-	 * <b>dt2-table2JS</b> parser function takes three or more arguments:
-	 * - The name of the JavaScript array that will hold the data.
-	 * - The <i>table</i> defined with the \<datatable2> tag where the
-	 * data should be taken from.
-	 * - The <i>where</i> clause, that should select one or more records.
-	 * - Optionally further arguments that are appended to those selected
-	 * from the database.
-	 */
-	public function renderTable2JS( Parser $parser,	$arg1, $arg2, $arg3 ) {
-		try {
-			/** Increment the [expensive function count]
-			 * (https://www.mediawiki.org/wiki/Manual:$wgExpensiveParserFunctionLimit).
-			 */
-			if ( !$parser->incrementExpensiveFunctionCount() ) {
-				throw new DataTable2Exception(
-					'datatable2-error-expensive-function' );
-			}
-
-                        /** sanitize the javascript variable name; prefix with dt2_
-                         * so no monkeying around trying to modify other window. properties.
-                         * And only allow letters, numbers, underscores in the name.
-                         */
-                        $jsVarName = "dt2_" . preg_replace('/[^a-zA-Z0-9_]/', '', $arg1 );
-			$table = DataTable2Parser::table2title( trim($arg2, '"') );
-			$where = $arg3;
-
-			/** Get unsorted data from the database. */
-			$data = $this->database_->select( $table, $where,
-				false, $pages, __METHOD__ );
-
-                        $scripttag = "<script>\n";
-                        $scripttag .= "window." . $jsVarName . "=[];\n";
-                        if ( $data ) {
-                                foreach ( $data as $row ) {
-                                        $objText = json_encode($row);
-                                        $scripttag .= "window." . $jsVarName . ".push(" . $objText . ");\n";
-                                }
-                        }
-                        $scripttag .= "</script>\n";
-
-			/** Call DataTable2::addDependencies(). */
-			if ( $pages ) {
-				$this->addDependencies( $parser, $pages, $table);
-			}
-
-                        $parserOutput = $parser->getOutput();
-                        $parserOutput->addHeadItem($scripttag);
-
-                        return "";
 		} catch ( DataTable2Exception $e ) {
 			return $e->getHTML();
 		}
