@@ -224,7 +224,7 @@ class DataTable2Database {
 				continue;
 			}
 
-			$table = DataTable2Parser::table2title( $args['table'] );
+                        $table = DataTable2Parser::table2title( $article->getTitle()->getFullText() . ":" . $args['table'] );
 
 			/** Use DataTable2ParserWithRecords to parse the data
 			 *	in each tag.
