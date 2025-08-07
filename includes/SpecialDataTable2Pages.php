@@ -61,7 +61,7 @@ class DataTable2PagesPager extends DataTable2Pager {
 		$par = null ) {
 		global $wgSpecialDataTable2PageParSep;
 
-		$param = explode( $wgSpecialDataTable2PageParSep, $par, 2 );
+		$param = explode( $wgSpecialDataTable2PageParSep, $par ?? '', 2 );
 
 		$this->pagename = isset( $param[1] ) && $param[1] != ''
 			? $param[1] : $this->getRequest()->getText( 'pagename' );
