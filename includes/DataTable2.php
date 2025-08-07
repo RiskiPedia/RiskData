@@ -278,7 +278,7 @@ class DataTable2 {
 			[ $this, 'renderLastGet' ],
 			SFH_OBJECT_ARGS );
 		$parser->setFunctionHook( 'dt2-table2JS',
-                        [ $this, 'renderTable2JS' ], SFH_OBJECT_ARGS );
+                        [ $this, 'renderTable2JS' ] );
 
 		/**
 		 * Add Scribunto support if the [Scribunto
@@ -558,17 +558,8 @@ class DataTable2 {
 	 * - Optionally further arguments that are appended to those selected
 	 * from the database.
 	 */
-	public function renderTable2JS( Parser $parser,	PPFrame $frame, $args ) {
+	public function renderTable2JS( Parser $parser,	$arg1, $arg2, $arg3 ) {
 		try {
-			/** Return error message if less then 3 arguments are
-			 *	provided.
-			 */
-			if ( count( $args ) < 3 ) {
-				throw new DataTable2Exception(
-					'datatable2-error-too-few-args',
-					'dt2-table2JS', count( $args ), 3 );
-			}
-
 			/** Increment the [expensive function count]
 			 * (https://www.mediawiki.org/wiki/Manual:$wgExpensiveParserFunctionLimit).
 			 */
@@ -581,10 +572,9 @@ class DataTable2 {
                          * so no monkeying around trying to modify other window. properties.
                          * And only allow letters, numbers, underscores in the name.
                          */
-                        $jsVarName = "dt2_" . preg_replace('/[^a-zA-Z0-9_]/', '', $frame->expand( $args[0] ));
-			$table = DataTable2Parser::table2title(
-				$frame->expand( $args[1] ) );
-			$where = $frame->expand( $args[2] );
+                        $jsVarName = "dt2_" . preg_replace('/[^a-zA-Z0-9_]/', '', $arg1 );
+			$table = DataTable2Parser::table2title( trim($arg2, '"') );
+			$where = $arg3;
 
 			/** Get unsorted data from the database. */
 			$data = $this->database_->select( $table, $where,
@@ -602,8 +592,7 @@ class DataTable2 {
 
 			/** Call DataTable2::addDependencies(). */
 			if ( $pages ) {
-				$this->addDependencies( $parser, $pages,
-					DataTable2Parser::table2title($table));
+				$this->addDependencies( $parser, $pages, $table);
 			}
 
                         $parserOutput = $parser->getOutput();
