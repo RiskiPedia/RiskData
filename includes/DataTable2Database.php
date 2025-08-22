@@ -198,6 +198,9 @@ class DataTable2Database {
 		 */
 		global $wgDataTable2WriteDest;
 
+                /* Ignore datatable2 tags inside <nowiki>...</nowiki> */
+                $text = preg_replace('/<nowiki>.*?<\/nowiki>/is', '', $text);
+
 		/** Extract data from all \<datatable2> tags on the
 		 *	page.
 		 */
