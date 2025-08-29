@@ -819,7 +819,7 @@ class DataTable2 {
 			}
 
 			$classAttr = $dataParser->getArg( 'class' ) !== null
-				? "class='{$dataParser->getArg( 'class' )}'" : '';
+				? "class='{$dataParser->getArg( 'class' )}'" : 'class=wikitable';
 
 			$wikitext .= "{| $classAttr\n$head";
 		}
