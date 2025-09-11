@@ -292,6 +292,7 @@ class DataTable2ParserWithRecords extends DataTable2Parser {
 
 	private $columns_; ///< See @ref getColumns().
 	private $records_; ///< See @ref getRecords().
+        private $badRecords_; ///< See @ref getBadRecords().
 
 	/* == magic methods == */
 
@@ -345,6 +346,16 @@ class DataTable2ParserWithRecords extends DataTable2Parser {
 		return $this->records_;
 	}
 
+	/**
+	 * @brief Get bad records
+	 *
+	 * @return array[] Numerically-indexed array of [ rowString, nExpected, nFound ]
+	 * records that have too many or too few columns
+	 */
+	public function getBadRecords() {
+		return $this->badRecords_;
+	}
+
 	/* == private methods == */
 
 	/**
@@ -365,6 +376,8 @@ class DataTable2ParserWithRecords extends DataTable2Parser {
                     $this->records_ = [];
                     return;
                 }
+
+                $this->badRecords_ = [];
 
 		/** Parse list of column names */
 		$this->columns_ = $this->getArg( 'columns' ) === null
@@ -402,22 +415,9 @@ class DataTable2ParserWithRecords extends DataTable2Parser {
 
 			$fieldCount = count( $fields );
 
-			if ( $fieldCount > DataTable2Database::MAX_FIELDS ) {
-				throw new DataTable2Exception(
-					'datatable2-error-too-many-columns',
-					htmlspecialchars( $row ),
-					$fieldCount, DataTable2Database::MAX_FIELDS );
-			}
-
-			/** Enlarge names by numeric keys if there are more
-			 * fields than names.
-			 */
-			if ( $fieldCount > $nameCount ) {
-				$this->columns_ = array_merge( $this->columns_, range(
-						$nameCount - $origNameCount + 1,
-						$fieldCount - $origNameCount ) );
-
-				$nameCount = $fieldCount;
+			if ( $fieldCount != $nameCount ) {
+                            $this->badRecords_[] = [ $row, $nameCount, $fieldCount ];
+                            continue;
 			}
 
 			/** If $assoc is true, index fields with column

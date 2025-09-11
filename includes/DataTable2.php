@@ -425,16 +425,26 @@ class DataTable2 {
 		try {
                         /** table and column names are required **/
                         if (!isset($args['table'])) {
-                            throw new DataTable2Exception('datatable2-error', 'Missing table attribute');
+                            throw new DataTable2Exception('datatable2-error-missing-tablename', 'Missing table attribute');
                         }
                         if (!isset($args['columns'])) {
-                            throw new DataTable2Exception('datatable2-error', 'Missing columns attribute');
+                            throw new DataTable2Exception('datatable2-error-missing-columns', 'Missing columns attribute');
                         }
 
 			/** Use DataTable2ParserWithRecords to parse the data in
 			 *	$input.
 			 */
 			$dataParser = new DataTable2ParserWithRecords( $input, $args );
+
+                        $badRecords = $dataParser->getBadRecords();
+
+                        if (count($badRecords) > 0) {
+                            $msg = "";
+                            foreach ($badRecords as $r) {
+                                $msg .= wfMessage('datatable2-error-bad-row', $r[0], $r[1], $r[2]) . " ";
+                            }
+                            throw new DataTable2Exception('datatable2-error-bad-data', $msg);
+                        }
 
 			/** Add the page to the [tracking category]
 			 * (https://www.mediawiki.org/wiki/Help:Tracking_categories)
