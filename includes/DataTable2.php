@@ -423,6 +423,14 @@ class DataTable2 {
 	public function renderDataTable( $input, array $args, Parser $parser,
 		PPFrame $frame ) {
 		try {
+                        /** table and column names are required **/
+                        if (!isset($args['table'])) {
+                            throw new DataTable2Exception('datatable2-error', 'Missing table attribute');
+                        }
+                        if (!isset($args['columns'])) {
+                            throw new DataTable2Exception('datatable2-error', 'Missing columns attribute');
+                        }
+
 			/** Use DataTable2ParserWithRecords to parse the data in
 			 *	$input.
 			 */

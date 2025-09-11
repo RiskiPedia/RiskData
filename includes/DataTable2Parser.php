@@ -359,7 +359,14 @@ class DataTable2ParserWithRecords extends DataTable2Parser {
 	 * than provided in the database.
 	 */
 	private function parseWiki( $assoc ) {
-		/** Parse list of column names, if any. */
+                /** table and column names are required **/
+                if ($this->getArg( 'table' ) === null || $this->getArg( 'columns' ) === null) {
+                    $this->columns_ = [];
+                    $this->records_ = [];
+                    return;
+                }
+
+		/** Parse list of column names */
 		$this->columns_ = $this->getArg( 'columns' ) === null
 			? [] : explode( '|', $this->getArg( 'columns' ) );
 
