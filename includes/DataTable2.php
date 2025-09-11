@@ -823,6 +823,13 @@ class DataTable2 {
 		$wikitext = '';
 
 		$head = $dataParser->getHead();
+                if ( $head === null ) {
+                    // If no <head> section, display column names:
+                    $head = "";
+                    foreach ( $dataParser->getColumns() as $c ) {
+                        $head .= "!".$c."\n";
+                    }
+                }
 
 		$isToBeWrapped = $dataParser->isToBeWrapped();
 
