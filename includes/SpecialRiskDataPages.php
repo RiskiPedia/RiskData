@@ -1,13 +1,13 @@
 <?php
 
 /**
- * @brief Special page DataTable2Pages for the @ref
- * Extensions-DataTable2.
+ * @brief Special page RiskDataPages for the @ref
+ * Extensions-RiskData.
  *
  * @file
  *
  * @ingroup Extensions
- * @ingroup Extensions-DataTable2
+ * @ingroup Extensions-RiskData
  *
  * @author [RV1971](https://www.mediawiki.org/wiki/User:RV1971)
  *
@@ -17,14 +17,14 @@
 use MediaWiki\MediaWikiServices;
 
 /**
- * @brief Pager used in SpecialDataTable2Pages.
+ * @brief Pager used in SpecialRiskDataPages.
  *
- * @ingroup Extensions-DataTable2
+ * @ingroup Extensions-RiskData
  *
  * @sa [MediaWiki Manual:Pager.php]
  * (https://www.mediawiki.org/wiki/Manual:Pager.php)
  */
-class DataTable2PagesPager extends DataTable2Pager {
+class RiskDataPagesPager extends RiskDataPager {
 
 	/* == public data members == */
 
@@ -47,21 +47,21 @@ class DataTable2PagesPager extends DataTable2Pager {
 	 * and shown starting with *page*.
 	 *
 	 * @xrefitem userdoc "User Documentation" "User Documentation" The
-	 * special page <b>DataTable2Pages</b> accepts two parameters,
+	 * special page <b>RiskDataPages</b> accepts two parameters,
 	 * which can either be appended to the URL
-	 * (e.g. Special:DataTable2Pages/Employees//Kampala) or given as
+	 * (e.g. Special:RiskDataPages/Employees//Kampala) or given as
 	 * the REQUEST parameters <tt>tablename</tt> and
 	 * <tt>pagename</tt>. The former take precedence. The separator
 	 * between parameters appended to the URL is configured with the
-	 * global variable @ref $wgSpecialDataTable2PageParSep. The page
+	 * global variable @ref $wgSpecialRiskDataPageParSep. The page
 	 * will display for the given table those pages whose titles are
 	 * greater or equal to the given one (regardless of the namespace).
 	 */
 	public function __construct( ?IContextSource $context = null,
 		$par = null ) {
-		global $wgSpecialDataTable2PageParSep;
+		global $wgSpecialRiskDataPageParSep;
 
-		$param = explode( $wgSpecialDataTable2PageParSep, $par ?? '', 2 );
+		$param = explode( $wgSpecialRiskDataPageParSep, $par ?? '', 2 );
 
 		$this->pagename = isset( $param[1] ) && $param[1] != ''
 			? $param[1] : $this->getRequest()->getText( 'pagename' );
@@ -73,7 +73,7 @@ class DataTable2PagesPager extends DataTable2Pager {
 
 	/// Specify the database query to be run by AlphabeticPager.
 	public function getQueryInfo() {
-		global $wgDataTable2ReadSrc;
+		global $wgRiskDataReadSrc;
 
 		$conds = [ 'dtd_table' => $this->tableDbKey,
 			'dtd_page = page_id' ];
@@ -88,7 +88,7 @@ class DataTable2PagesPager extends DataTable2Pager {
 		}
 
 		return [
-			'tables' => [ $wgDataTable2ReadSrc, 'page' ],
+			'tables' => [ $wgRiskDataReadSrc, 'page' ],
 			'fields' => [ 'page_namespace', 'page_title',
 				'records' => 'count(*)' ],
 			'conds' => $conds,
@@ -109,7 +109,7 @@ class DataTable2PagesPager extends DataTable2Pager {
 	 * @return string Wikitext.
 	 */
 	public function formatRow( $row ) {
-		return $this->msg( 'datatable2pages-row',
+		return $this->msg( 'riskdatapages-row',
 			Title::makeTitle( $row->page_namespace,
 				$row->page_title ), $this->tablename,
 			$row->records )->text() . "\n";
@@ -123,12 +123,12 @@ class DataTable2PagesPager extends DataTable2Pager {
 	public function getPageHeader() {
 		$content = Html::rawElement( 'label',
 			[ 'for' => 'pagename' ],
-			$this->msg( 'datatable2pages-from' )->parse() ) . '&#160'
+			$this->msg( 'riskdatapages-from' )->parse() ) . '&#160'
 			. Xml::input( 'pagename', 25, $this->pagename,
 				[ 'id' => 'pagename' ] ) . ' '
 			. Html::rawElement( 'label',
 				[ 'for' => 'tablename' ],
-				$this->msg( 'datatable2pages-table' )->parse() ) . '&#160'
+				$this->msg( 'riskdatapages-table' )->parse() ) . '&#160'
 			. Xml::input( 'tablename', 25, $this->tablename ?? '',
 				[ 'id' => 'tablename' ] );
 
@@ -143,13 +143,13 @@ class DataTable2PagesPager extends DataTable2Pager {
 }
 
 /**
- * @brief Special page DataTable2Pages for the @ref
- * Extensions-DataTable2.
+ * @brief Special page RiskDataPages for the @ref
+ * Extensions-RiskData.
  *
- * @ingroup Extensions-DataTable2
+ * @ingroup Extensions-RiskData
  */
-class SpecialDataTable2Pages extends SpecialDataTable2 {
+class SpecialRiskDataPages extends SpecialRiskData {
 	public function __construct() {
-		parent::__construct( 'DataTable2Pages' );
+		parent::__construct( 'RiskDataPages' );
 	}
 }

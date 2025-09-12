@@ -1,5 +1,5 @@
 {
-	"name": "DataTable2",
+	"name": "RiskData",
 	"private": true,
 	"scripts": {
 		"test": "grunt test"

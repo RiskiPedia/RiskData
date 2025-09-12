@@ -1,13 +1,13 @@
 <?php
 
 /**
- * @brief SQL Transformer for the @ref DataTable2.php "DataTable2"
+ * @brief SQL Transformer for the @ref RiskData.php "RiskData"
  * extension.
  *
  * @file
  *
  * @ingroup Extensions
- * @ingroup Extensions-DataTable2
+ * @ingroup Extensions-RiskData
  *
  * @author [RV1971](https://www.mediawiki.org/wiki/User:RV1971)
  *
@@ -15,7 +15,7 @@
 
 /**
  * @brief Auxiliary class to transform an SQL expression from logical
- * to database representation for the @ref Extensions-DataTable2.
+ * to database representation for the @ref Extensions-RiskData.
  *
  * The tokenizer has a very simple approach: it uses the next charcter
  * to decide which kind of token is the next one, and then uses a
@@ -24,9 +24,9 @@
  * identifiers from quoted strings, and we do not need more to
  * accomplish the task of this class.
  *
- * @ingroup Extensions-DataTable2
+ * @ingroup Extensions-RiskData
  */
-class DataTable2SqlTransformer {
+class RiskDataSqlTransformer {
 	/* == private constants == */
 
 	private const INVALID = -1;   ///< Token is invalid.
@@ -82,7 +82,7 @@ class DataTable2SqlTransformer {
 	/* == private data members == */
 
 	/**
-	 * @brief Flipped @ref $wgDataTable2SqlWhiteList.
+	 * @brief Flipped @ref $wgRiskDataSqlWhiteList.
 	 *
 	 * Used for fast test whether an identifier is on the white list.
 	 *
@@ -98,9 +98,9 @@ class DataTable2SqlTransformer {
 	 * Initialize data members.
 	 */
 	public function __construct() {
-		global $wgDataTable2SqlWhiteList;
+		global $wgRiskDataSqlWhiteList;
 
-		$this->whiteList_ = array_flip( $wgDataTable2SqlWhiteList );
+		$this->whiteList_ = array_flip( $wgRiskDataSqlWhiteList );
 	}
 
 	/* == operations == */
@@ -137,7 +137,7 @@ class DataTable2SqlTransformer {
 	 * @return array Pair consisting of token type and token value.
 	 */
 	public function getToken( $input, &$offset ) {
-		/** Invoke DataTable2SqlTransformer::getType() to obtain the
+		/** Invoke RiskDataSqlTransformer::getType() to obtain the
 		 *	type of the next token.
 		 */
 		$type = $this->getType( $input[$offset] );
@@ -174,18 +174,18 @@ class DataTable2SqlTransformer {
 	 *
 	 * @return string Transformed SQL.
 	 *
-	 * @throws DataTable2Exception if one of the following is found:
+	 * @throws RiskDataException if one of the following is found:
 	 * - an unterminated SQL comment;
 	 * - an invalid token;
 	 * - an identifier that is neither a column name nor on the whitelist
-	 *   configured with @ref $wgDataTable2SqlWhiteList.
+	 *   configured with @ref $wgRiskDataSqlWhiteList.
 	 */
 	public function transform( $sql, $columns ) {
 		/** Get mapping of logical colum names to database colum
 		 *	names.
 		 */
 		$columnMap = array_combine( $columns,
-			DataTable2Database::dataCols( count( $columns ) ) );
+			RiskDataDatabase::dataCols( count( $columns ) ) );
 
 		$result = '';
 
@@ -196,8 +196,8 @@ class DataTable2SqlTransformer {
 				$endPos = strpos( $sql, '*/', $i );
 
 				if ( $endPos === false ) {
-					throw new DataTable2Exception(
-						'datatable2-error-sql-unterminated-comment',
+					throw new RiskDataException(
+						'riskdata-error-sql-unterminated-comment',
 						htmlspecialchars( substr( $sql, $i ) ) );
 				}
 
@@ -212,8 +212,8 @@ class DataTable2SqlTransformer {
 			$token = $this->getToken( $sql, $i );
 
 			if ( $token[0] == self::INVALID ) {
-				throw new DataTable2Exception(
-					'datatable2-error-sql-token',
+				throw new RiskDataException(
+					'riskdata-error-sql-token',
 					htmlspecialchars( substr( $sql, $i ) ) );
 			}
 
@@ -247,8 +247,8 @@ class DataTable2SqlTransformer {
 					}
 
 					if ( !isset( $this->whiteList_[$identifier] ) ) {
-						throw new DataTable2Exception(
-							'datatable2-error-sql-identifier',
+						throw new RiskDataException(
+							'riskdata-error-sql-identifier',
 							htmlspecialchars( $identifier ) );
 					}
 				}

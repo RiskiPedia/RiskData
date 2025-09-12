@@ -2,12 +2,12 @@
 
 /**
  * @brief [Magic words](https://www.mediawiki.org/wiki/Manual:Magic_words)
- * for the @ref Extensions-DataTable2.
+ * for the @ref Extensions-RiskData.
  *
  * @file
  *
  * @ingroup Extensions
- * @ingroup Extensions-DataTable2
+ * @ingroup Extensions-RiskData
  */
 
 /// Array mapping magic word IDs to wiki text.

@@ -1,13 +1,13 @@
 <?php
 
 /**
- * @brief Database access layer for the @ref DataTable2.php "DataTable2"
+ * @brief Database access layer for the @ref RiskData.php "RiskData"
  * extension.
  *
  * @file
  *
  * @ingroup Extensions
- * @ingroup Extensions-DataTable2
+ * @ingroup Extensions-RiskData
  *
  * @author [RV1971](https://www.mediawiki.org/wiki/User:RV1971)
  *
@@ -17,14 +17,14 @@ use MediaWiki\MediaWikiServices;
 
 /**
  * @brief Auxiliary class to access the database tables of the @ref
- * Extensions-DataTable2.
+ * Extensions-RiskData.
  *
- * @ingroup Extensions-DataTable2
+ * @ingroup Extensions-RiskData
  *
  * @sa [MediaWiki Manual:Database_access]
  * (https://www.mediawiki.org/wiki/Manual:Database_access)
  */
-class DataTable2Database {
+class RiskDataDatabase {
 	/* == constants == */
 
 	/**
@@ -34,14 +34,14 @@ class DataTable2Database {
 	 * default, this extension allows up to 30 columns in a table. In
 	 * the unlikely case that you would like to <b>enlarge the maximum
 	 * number of columns</b>, you need to add columns to the table
-	 * <tt>datatable2_data</tt> defined in the file
-	 * <tt>datatable2_data.sql</tt> and to adapt the class constant
-	 * DataTable2Database::MAX_FIELDS.
+	 * <tt>riskdata_data</tt> defined in the file
+	 * <tt>riskdata_data.sql</tt> and to adapt the class constant
+	 * RiskDataDatabase::MAX_FIELDS.
 	 *
 	 * @xrefitem userdoc "User Documentation" "User Documentation" By
 	 * default, the first 10 columns are indexed. In order to <b>index
 	 * more (or less) columns</b>, you need to create (or drop)
-	 * indexes; see file <tt>datatable2_data.sql</tt>.
+	 * indexes; see file <tt>riskdata_data.sql</tt>.
 	 */
 	public const MAX_FIELDS = 30;
 
@@ -86,7 +86,7 @@ class DataTable2Database {
 	 * @return array Column names. Empty array if the table does not
 	 * exist.
 	 *
-	 * @throws DataTable2Exception if the table has records but no
+	 * @throws RiskDataException if the table has records but no
 	 * meta data are found for the table.
 	 */
 	public function getColumns( $table, $fname = __METHOD__ ) {
@@ -100,11 +100,11 @@ class DataTable2Database {
 		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_REPLICA );
 
 		/** The table to select column names from is specified in
-		 *	the global variable @ref $wgDataTable2MetaReadSrc.
+		 *	the global variable @ref $wgRiskDataMetaReadSrc.
 		 */
-		global $wgDataTable2MetaReadSrc;
+		global $wgRiskDataMetaReadSrc;
 
-		$res = $dbr->select( $wgDataTable2MetaReadSrc, 'dtm_columns',
+		$res = $dbr->select( $wgRiskDataMetaReadSrc, 'dtm_columns',
 			[ 'dtm_table' => $table ], $fname );
 
 		if ( !$res->numRows() ) {
@@ -112,15 +112,15 @@ class DataTable2Database {
 			 * records for the table. Silently accept non-existing
 			 * meta data if there are no rows.
 			 */
-			global $wgDataTable2ReadSrc;
+			global $wgRiskDataReadSrc;
 
-			$res = $dbr->select( $wgDataTable2ReadSrc, 'dtd_table',
+			$res = $dbr->select( $wgRiskDataReadSrc, 'dtd_table',
 				[ 'dtd_table' => $table ], $fname,
 				[ 'LIMIT' => 1 ] );
 
 			if ( $res->numRows() ) {
-				throw new DataTable2Exception(
-					'datatable2-error-no-meta',
+				throw new RiskDataException(
+					'riskdata-error-no-meta',
 					htmlspecialchars( $table ) );
 			} else {
 				$this->columns_[$table] = [];
@@ -148,30 +148,30 @@ class DataTable2Database {
 	 */
 	public function delete( $pageId, $fname = __METHOD__ ) {
 		/** The table to delete from is specified in the global
-		 *	variable @ref $wgDataTable2WriteDest.
+		 *	variable @ref $wgRiskDataWriteDest.
 		 */
-		global $wgDataTable2WriteDest;
+		global $wgRiskDataWriteDest;
 
 		$dbw = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 
 		// $dbw->begin( $fname );
 
 		/** Delete all data for this page. */
-		$dbw->delete( $wgDataTable2WriteDest,
+		$dbw->delete( $wgRiskDataWriteDest,
 			[ 'dtd_page' => $pageId ], $fname );
 
 		/** The table to delete metadata from is specified in the global
-		 *	variable @ref $wgDataTable2MetaWriteDest.
+		 *	variable @ref $wgRiskDataMetaWriteDest.
 		 */
-		global $wgDataTable2MetaWriteDest;
+		global $wgRiskDataMetaWriteDest;
 
 		/** Delete any metadata that has become unused, by this or
 		 *	by any preceding delete operation.
 		 */
-		$subquery = $dbw->selectSQLText( $wgDataTable2WriteDest,
+		$subquery = $dbw->selectSQLText( $wgRiskDataWriteDest,
 			'dtd_table', '', $fname );
 
-		$dbw->delete( $wgDataTable2MetaWriteDest,
+		$dbw->delete( $wgRiskDataMetaWriteDest,
 			[ "dtm_table not in ($subquery)" ], $fname );
 
 		// $dbw->commit( $fname );
@@ -194,20 +194,20 @@ class DataTable2Database {
 	 */
 	public function save( $article, $text, $fname = __METHOD__ ) {
 		/** The table to save to is specified in the global
-		 *	variable @ref $wgDataTable2WriteDest.
+		 *	variable @ref $wgRiskDataWriteDest.
 		 */
-		global $wgDataTable2WriteDest;
+		global $wgRiskDataWriteDest;
 
-                /* Ignore datatable2 tags inside <nowiki>...</nowiki> */
+                /* Ignore riskdata tags inside <nowiki>...</nowiki> */
                 $text = preg_replace('/<nowiki>.*?<\/nowiki>/is', '', $text);
 
-		/** Extract data from all \<datatable2> tags on the
+		/** Extract data from all \<riskdata> tags on the
 		 *	page.
 		 */
-		Parser::extractTagsAndParams( [ 'datatable2' ],
+		Parser::extractTagsAndParams( [ 'riskdata' ],
 			$text, $datatables );
 
-		/** Invoke Invoke DataTable2::deleteData() to delete all
+		/** Invoke Invoke RiskData::deleteData() to delete all
 		 *	existing data for the page.
 		 */
 		$this->delete( $article->getId(), $fname );
@@ -216,7 +216,7 @@ class DataTable2Database {
 
 		// $dbw->begin( $fname );
 
-		/** Loop through the \<datatable2> tags found. */
+		/** Loop through the \<riskdata> tags found. */
 		foreach ( $datatables as $datatable ) {
 			[ $element, $content, $args ] = $datatable;
 
@@ -227,12 +227,12 @@ class DataTable2Database {
 				continue;
 			}
 
-                        $table = DataTable2Parser::table2title( $article->getTitle()->getFullText() . ":" . $args['table'] );
+                        $table = RiskDataParser::table2title( $article->getTitle()->getFullText() . ":" . $args['table'] );
 
-			/** Use DataTable2ParserWithRecords to parse the data
+			/** Use RiskDataParserWithRecords to parse the data
 			 *	in each tag.
 			 */
-			$parser = new DataTable2ParserWithRecords( $content, $args,
+			$parser = new RiskDataParserWithRecords( $content, $args,
 				false );
 
 			foreach ( $parser->getRecords() as $record ) {
@@ -250,29 +250,29 @@ class DataTable2Database {
 				 *	individually since the number of columns might
 				 *	differ among records.
 				 */
-				$dbw->insert( $wgDataTable2WriteDest, $dbRecord, $fname );
+				$dbw->insert( $wgRiskDataWriteDest, $dbRecord, $fname );
 			}
 
 			/** The table to save metadata to is specified in the
 			 *	global variable @ref
-			 *	$wgDataTable2MetaWriteDest.
+			 *	$wgRiskDataMetaWriteDest.
 			 */
-			global $wgDataTable2MetaWriteDest;
+			global $wgRiskDataMetaWriteDest;
 
 			$metaCond = [ 'dtm_table' => $table->getDBkey() ];
 
-			$res = $dbw->select( $wgDataTable2MetaWriteDest, 'dtm_table',
+			$res = $dbw->select( $wgRiskDataMetaWriteDest, 'dtm_table',
 				$metaCond, $fname );
 
 			if ( $res->numRows() ) {
 				/** Update the metadata record if there is one. */
-				$dbw->update( $wgDataTable2MetaWriteDest,
+				$dbw->update( $wgRiskDataMetaWriteDest,
 					[ 'dtm_columns'
 						=> implode( '|', $parser->getColumns() ) ],
 					$metaCond, $fname );
 			} else {
 				/** Otherwise insert a new one. */
-				$dbw->insert( $wgDataTable2MetaWriteDest,
+				$dbw->insert( $wgRiskDataMetaWriteDest,
 					[ 'dtm_table' => $table->getDBkey(),
 						'dtm_columns' =>
 						implode( '|', $parser->getColumns() ) ],
@@ -322,16 +322,16 @@ class DataTable2Database {
 	public function select( $table, $where = null, $orderBy = null,
 		&$pages = null, $fname = __METHOD__ ) {
 		/** Work with a static instance of
-		 *	DataTable2SqlTransformer.
+		 *	RiskDataSqlTransformer.
 		 */
 		static $transformer;
 
-		$transformer ??= new DataTable2SqlTransformer;
+		$transformer ??= new RiskDataSqlTransformer;
 
 		/** The table to select from is specified in the global
-		 *	variable @ref $wgDataTable2ReadSrc.
+		 *	variable @ref $wgRiskDataReadSrc.
 		 */
-		global $wgDataTable2ReadSrc;
+		global $wgRiskDataReadSrc;
 
 		$conds = [ 'dtd_table' => $table->getDBkey() ];
 
@@ -369,7 +369,7 @@ class DataTable2Database {
 		/** Get the database records. */
 		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_REPLICA );
 
-		$res = $dbr->select( $wgDataTable2ReadSrc, $dbColumns, $conds,
+		$res = $dbr->select( $wgRiskDataReadSrc, $dbColumns, $conds,
 			$fname, $orderBy ? [ 'ORDER BY' => $orderBy ] : [] );
 
 		/** Transform the query result into an array of arrays. */

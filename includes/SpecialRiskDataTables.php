@@ -1,13 +1,13 @@
 <?php
 
 /**
- * @brief Special page DataTable2Tables for the @ref
- * Extensions-DataTable2.
+ * @brief Special page RiskDataTables for the @ref
+ * Extensions-RiskData.
  *
  * @file
  *
  * @ingroup Extensions
- * @ingroup Extensions-DataTable2
+ * @ingroup Extensions-RiskData
  *
  * @author [RV1971](https://www.mediawiki.org/wiki/User:RV1971)
  *
@@ -17,14 +17,14 @@
 use MediaWiki\MediaWikiServices;
 
 /**
- * @brief Pager used in SpecialDataTable2Tables.
+ * @brief Pager used in SpecialRiskDataTables.
  *
- * @ingroup Extensions-DataTable2
+ * @ingroup Extensions-RiskData
  *
  * @sa [MediaWiki Manual:Pager.php]
  * (https://www.mediawiki.org/wiki/Manual:Pager.php)
  */
-class DataTable2TablesPager extends DataTable2Pager {
+class RiskDataTablesPager extends RiskDataPager {
 
 	/* == magic methods == */
 
@@ -36,9 +36,9 @@ class DataTable2TablesPager extends DataTable2Pager {
 	 * @param string|null $tablename Table name to start from.
 	 *
 	 * @xrefitem userdoc "User Documentation" "User Documentation" The
-	 * special page <b>DataTable2Tables</b> accepts one parameter,
+	 * special page <b>RiskDataTables</b> accepts one parameter,
 	 * which can either be appended to the URL with a slash
-	 * (e.g. Special:DataTable2Tables/Employees) or given as the
+	 * (e.g. Special:RiskDataTables/Employees) or given as the
 	 * REQUEST parameter <tt>tablename</tt>. The former takes
 	 * precedence. The page will display tables whose names are
 	 * greater or equal to this.
@@ -52,7 +52,7 @@ class DataTable2TablesPager extends DataTable2Pager {
 
 	/// Specify the database query to be run by AlphabeticPager.
 	public function getQueryInfo() {
-		global $wgDataTable2ReadSrc;
+		global $wgRiskDataReadSrc;
 
 		$conds = [];
 
@@ -63,7 +63,7 @@ class DataTable2TablesPager extends DataTable2Pager {
 				. $dbr->addQuotes( $this->tableDbKey );
 		}
 
-		$table = $dbr->selectSQLText( $wgDataTable2ReadSrc,
+		$table = $dbr->selectSQLText( $wgRiskDataReadSrc,
 			[ 'dtd_table', 'dtd_page', 'records' => 'count(*)' ],
 			$conds, __METHOD__,
 			[ 'GROUP BY' => [ 'dtd_table', 'dtd_page' ] ] );
@@ -90,10 +90,10 @@ class DataTable2TablesPager extends DataTable2Pager {
 	public function formatRow( $row ) {
 		$table = Title::makeTitle( NS_MAIN, $row->dtd_table );
 
-		$detailCateg = $this->msg( 'datatable2-consumer-detail-category',
+		$detailCateg = $this->msg( 'riskdata-consumer-detail-category',
 			$table->getText() )->inContentLanguage()->text();
 
-		return $this->msg( 'datatable2tables-row', $table->getText(),
+		return $this->msg( 'riskdatatables-row', $table->getText(),
 			$row->pages, $row->records, $detailCateg )->text() . "\n";
 	}
 
@@ -105,7 +105,7 @@ class DataTable2TablesPager extends DataTable2Pager {
 	public function getPageHeader() {
 		$content = Html::rawElement( 'label',
 			[ 'for' => 'tablename' ],
-			$this->msg( 'datatable2tables-from' )->parse() ) . '&#160'
+			$this->msg( 'riskdatatables-from' )->parse() ) . '&#160'
 			. Xml::input( 'tablename', 25, $this->tablename ?? '',
 				[ 'id' => 'tablename' ] ) . ' ';
 
@@ -114,13 +114,13 @@ class DataTable2TablesPager extends DataTable2Pager {
 }
 
 /**
- * @brief Special page DataTable2Tables for the @ref
- * Extensions-DataTable2.
+ * @brief Special page RiskDataTables for the @ref
+ * Extensions-RiskData.
  *
- * @ingroup Extensions-DataTable2
+ * @ingroup Extensions-RiskData
  */
-class SpecialDataTable2Tables extends SpecialDataTable2 {
+class SpecialRiskDataTables extends SpecialRiskData {
 	public function __construct() {
-		parent::__construct( 'DataTable2Tables', false );
+		parent::__construct( 'RiskDataTables', false );
 	}
 }

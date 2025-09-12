@@ -1,24 +1,24 @@
 <?php
 
 /**
- * @brief Parsers for the @ref DataTable2.php "DataTable2" extension.
+ * @brief Parsers for the @ref RiskData.php "RiskData" extension.
  *
  * @file
  *
  * @ingroup Extensions
- * @ingroup Extensions-DataTable2
+ * @ingroup Extensions-RiskData
  *
  * @author [RV1971](https://www.mediawiki.org/wiki/User:RV1971)
  *
  */
 
 /**
- * @brief Auxiliary class to parse the content of a \<datatable2> or
- * \<dt2-showtable> tag for the @ref Extensions-DataTable2.
+ * @brief Auxiliary class to parse the content of a \<riskdata> or
+ * \<dt2-showtable> tag for the @ref Extensions-RiskData.
  *
- * @ingroup Extensions-DataTable2
+ * @ingroup Extensions-RiskData
  */
-class DataTable2Parser {
+class RiskDataParser {
 	/* == public static methods == */
 
 	/**
@@ -28,7 +28,7 @@ class DataTable2Parser {
 	 *
 	 * @return Title Title object.
 	 *
-	 * @throws DataTable2Exception if $table is not a valid table
+	 * @throws RiskDataException if $table is not a valid table
 	 * name.
 	 */
 	public static function table2title( $table ) {
@@ -42,7 +42,7 @@ class DataTable2Parser {
 		$title = Title::makeTitleSafe( NS_MAIN, trim( $table ) );
 
 		if ( !$title ) {
-			throw new DataTable2Exception( 'datatable2-error-table-name',
+			throw new RiskDataException( 'riskdata-error-table-name',
 				htmlspecialchars( $table ) );
 		}
 
@@ -62,7 +62,7 @@ class DataTable2Parser {
 	 * @return string|null Tag content, if any; NULL if no such
 	 * tag or if tag is empty.
 	 *
-	 * @throws DataTable2Exception if an unterminated tag is
+	 * @throws RiskDataException if an unterminated tag is
 	 * encountered.
 	 */
 	public static function extractTag( &$input, $tag ) {
@@ -77,8 +77,8 @@ class DataTable2Parser {
 			$endPos = strpos( $input, "</$tag>", $tagLen );
 
 			if ( $endPos === false ) {
-				throw new DataTable2Exception(
-					'datatable2-error-unterminated-tag',
+				throw new RiskDataException(
+					'riskdata-error-unterminated-tag',
 					$tag, htmlspecialchars( $input ) );
 			} else {
 				$content = substr( $input, $tagLen, $endPos - $tagLen );
@@ -106,7 +106,7 @@ class DataTable2Parser {
 	/**
 	 * @brief Constructor.
 	 *
-	 * @param string $input The text content of a \<datatable2>
+	 * @param string $input The text content of a \<riskdata>
 	 * or \<dt2-showtable> tag.
 	 *
 	 * @param array|null $args Associative array of arguments indexed
@@ -119,17 +119,17 @@ class DataTable2Parser {
 	 * are always case-sensitive, and no automatic uppercasing of
 	 * the first character takes place.
 	 *
-	 * @sa DataTable2Parser::getArg() for a description of valid arguments.
+	 * @sa RiskDataParser::getArg() for a description of valid arguments.
 	 */
 	public function __construct( $input, $args = null ) {
-		global $wgDataTable2Args;
+		global $wgRiskDataArgs;
 
 		/** Initialize @ref $args_ with defaults from the global
-		 *	variable @ref $wgDataTable2Args and merge with $args,
+		 *	variable @ref $wgRiskDataArgs and merge with $args,
 		 *	excluding arguments which are empty or null.
 		 */
 		$this->args_ = array_filter( (array)$args, static fn ( $s ): bool => $s !== null && $s !== '' )
-			+ (array)$wgDataTable2Args;
+			+ (array)$wgRiskDataArgs;
 
 		/** Transform the `table`argument to a Title object, if
 		 *	any.
@@ -167,7 +167,7 @@ class DataTable2Parser {
 	 *
 	 * @xrefitem userdoc "User Documentation" "User Documentation" You
 	 * may provide a <b>table head</b> by including \<head>
-	 * ... \</head> as the first thing in the \<datatable2> or
+	 * ... \</head> as the first thing in the \<riskdata> or
 	 * \<dt2-showtable>. Do not include the opening {| into your head;
 	 * this is automatically inserted by the extension.
 	 *
@@ -183,7 +183,7 @@ class DataTable2Parser {
 	 * @brief Get an argument by key.
 	 *
 	 * @xrefitem userdoc "User Documentation" "User Documentation"
-	 * Arguments to \<datatable2> and \<dt2-showtable> are written as
+	 * Arguments to \<riskdata> and \<dt2-showtable> are written as
 	 * key-value pairs in the usual XML notation. The <b>valid
 	 * argument keys</b> are:
 	 * - <tt>args</tt> Additional arguments to pass to the template, in the
@@ -198,7 +198,7 @@ class DataTable2Parser {
 	 * - <tt>template</tt> Name of a template to use to display the data.
 	 *
 	 * @xrefitem userdoc "User Documentation" "User Documentation" Furthermore,
-	 * \<datatable2> tags may have the following arguments:
+	 * \<riskdata> tags may have the following arguments:
 	 * - <tt>columns</tt> Pipe-separated list of column names. Do not use
 	 * names with leading underscores since those are reverved for
 	 * internal use. You must specify names at least for those columns that
@@ -216,7 +216,7 @@ class DataTable2Parser {
 	 * invocations etc. in the data. You can either define a template
 	 * `{{!}}` containing just the pipe character and use it instead, or
 	 * set another <tt>fs</tt> in the tag or in the global variable
-	 * @ref $wgDataTable2Args.
+	 * @ref $wgRiskDataArgs.
 	 *
 	 * @param string $key Argument key.
 	 *
@@ -259,13 +259,13 @@ class DataTable2Parser {
 }
 
 /**
- * @brief Auxiliary class to parse the content of a \<datatable2>
+ * @brief Auxiliary class to parse the content of a \<riskdata>
  * tag, splitting data into records for the @ref
- * Extensions-DataTable2.
+ * Extensions-RiskData.
  *
- * @ingroup Extensions-DataTable2
+ * @ingroup Extensions-RiskData
  */
-class DataTable2ParserWithRecords extends DataTable2Parser {
+class RiskDataParserWithRecords extends RiskDataParser {
 	/* == public static methods == */
 
 	/**
@@ -299,7 +299,7 @@ class DataTable2ParserWithRecords extends DataTable2Parser {
 	/**
 	 * @brief Constructor.
 	 *
-	 * Invoke DataTable2Parser::__constructor, then split remaining
+	 * Invoke RiskDataParser::__constructor, then split remaining
 	 * text into records.
 	 *
 	 * @xrefitem userdoc "User Documentation" "User Documentation" In
@@ -308,7 +308,7 @@ class DataTable2ParserWithRecords extends DataTable2Parser {
 	 * syntax errors such as double dashes appearing inside comments
 	 * will not be detected.
 	 *
-	 * @param string $input The text content of a datatable2 tag.
+	 * @param string $input The text content of a riskdata tag.
 	 *
 	 * @param array|null $args Associative array of arguments indexed
 	 * by attribute name.
@@ -316,7 +316,7 @@ class DataTable2ParserWithRecords extends DataTable2Parser {
 	 * @param bool $assoc Whether the records returned by
 	 * getRecords() should be indexed by column names.
 	 *
-	 * @sa DataTable2Parser::getArg() for a description of valid arguments.
+	 * @sa RiskDataParser::getArg() for a description of valid arguments.
 	 */
 	public function __construct( $input, ?array $args = null, $assoc = true ) {
 		parent::__construct( $input, $args );
@@ -366,7 +366,7 @@ class DataTable2ParserWithRecords extends DataTable2Parser {
 	 * @param bool $assoc Whether the records returned by
 	 * getRecords() should be indexed by column names.
 	 *
-	 * @throws DataTable2Exception if the data need more columns
+	 * @throws RiskDataException if the data need more columns
 	 * than provided in the database.
 	 */
 	private function parseWiki( $assoc ) {

@@ -1,12 +1,12 @@
 <!-- 
      page taken from 
-     https://www.mediawiki.org/wiki/Extension:DataTable2/Lua
+     https://www.mediawiki.org/wiki/Extension:RiskData/Lua
 -->  
 == Lua library ==
 
-=== mw.ext.datatable2.select ===
+=== mw.ext.riskdata.select ===
 
-<code>mw.ext.datatable2.select( table, where, orderBy )</code>
+<code>mw.ext.riskdata.select( table, where, orderBy )</code>
 
 Selects data from a logical table. The arguments work the same way as the arguments <code>table, where, order-by</code> in the <code>[[{{NAMESPACE}}:{{BASEPAGENAME}}#&lt;dt2-showtable&gt;|&lt;dt2-showtable&gt;]]</code> tag.
 

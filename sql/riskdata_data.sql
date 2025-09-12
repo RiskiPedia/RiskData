@@ -1,9 +1,9 @@
 -- see https://www.mediawiki.org/wiki/Manual:Coding_conventions/Database
 
 --
--- Data saved from <datatable2> tags.
+-- Data saved from <riskdata> tags.
 --
-CREATE TABLE /*_*/datatable2_data (
+CREATE TABLE /*_*/riskdata_data (
   -- Logical table name.
   dtd_table varchar(255) NOT NULL,
   -- Key to the page_id of the page containing the link.
@@ -41,26 +41,26 @@ CREATE TABLE /*_*/datatable2_data (
   dtd_30 varchar(255)
 ) /*$wgDBTableOptions*/;
 
-CREATE INDEX /*i*/dtd_table ON /*_*/datatable2_data(dtd_table);
+CREATE INDEX /*i*/dtd_table ON /*_*/riskdata_data(dtd_table);
 
-CREATE INDEX /*i*/dtd_page ON /*_*/datatable2_data(dtd_page);
+CREATE INDEX /*i*/dtd_page ON /*_*/riskdata_data(dtd_page);
 
-CREATE INDEX /*i*/dtd_01 ON /*_*/datatable2_data(dtd_01);
+CREATE INDEX /*i*/dtd_01 ON /*_*/riskdata_data(dtd_01);
 
-CREATE INDEX /*i*/dtd_02 ON /*_*/datatable2_data(dtd_02);
+CREATE INDEX /*i*/dtd_02 ON /*_*/riskdata_data(dtd_02);
 
-CREATE INDEX /*i*/dtd_03 ON /*_*/datatable2_data(dtd_03);
+CREATE INDEX /*i*/dtd_03 ON /*_*/riskdata_data(dtd_03);
 
-CREATE INDEX /*i*/dtd_04 ON /*_*/datatable2_data(dtd_04);
+CREATE INDEX /*i*/dtd_04 ON /*_*/riskdata_data(dtd_04);
 
-CREATE INDEX /*i*/dtd_05 ON /*_*/datatable2_data(dtd_05);
+CREATE INDEX /*i*/dtd_05 ON /*_*/riskdata_data(dtd_05);
 
-CREATE INDEX /*i*/dtd_06 ON /*_*/datatable2_data(dtd_06);
+CREATE INDEX /*i*/dtd_06 ON /*_*/riskdata_data(dtd_06);
 
-CREATE INDEX /*i*/dtd_07 ON /*_*/datatable2_data(dtd_07);
+CREATE INDEX /*i*/dtd_07 ON /*_*/riskdata_data(dtd_07);
 
-CREATE INDEX /*i*/dtd_08 ON /*_*/datatable2_data(dtd_08);
+CREATE INDEX /*i*/dtd_08 ON /*_*/riskdata_data(dtd_08);
 
-CREATE INDEX /*i*/dtd_09 ON /*_*/datatable2_data(dtd_09);
+CREATE INDEX /*i*/dtd_09 ON /*_*/riskdata_data(dtd_09);
 
-CREATE INDEX /*i*/dtd_10 ON /*_*/datatable2_data(dtd_10);
+CREATE INDEX /*i*/dtd_10 ON /*_*/riskdata_data(dtd_10);

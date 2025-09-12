@@ -1,21 +1,21 @@
 <!--
      page taken from
-     https://www.mediawiki.org/wiki/Extension:DataTable2/Usage
+     https://www.mediawiki.org/wiki/Extension:RiskData/Usage
 -->
 == Usage ==
 
 === Storing and displaying data ===
 
-Since data are saved to the database using the [[Manual:Hooks/NewRevisionFromEditComplete|NewRevisionFromEditComplete]] hook, no data is stored in the database when the page has not changed. Therefore, you should install the extension before using <code>&lt;datatable2&gt;</code> tags in your wiki pages. Otherwise, after installation, you need to modify each page containing <code>&lt;datatable2&gt;</code> tags in order to get the data actually saved.
+Since data are saved to the database using the [[Manual:Hooks/NewRevisionFromEditComplete|NewRevisionFromEditComplete]] hook, no data is stored in the database when the page has not changed. Therefore, you should install the extension before using <code>&lt;riskdata&gt;</code> tags in your wiki pages. Otherwise, after installation, you need to modify each page containing <code>&lt;riskdata&gt;</code> tags in order to get the data actually saved.
 
-All pages storing data in DataTable2 tables are added to the tracking category defined by the [[{{NAMESPACE}}:{{BASEPAGENAME}}#Messages|system message]] <code>datatable2-producer-category</code>. You might decide to add some explanatory text to the category page.
+All pages storing data in RiskData tables are added to the tracking category defined by the [[{{NAMESPACE}}:{{BASEPAGENAME}}#Messages|system message]] <code>riskdata-producer-category</code>. You might decide to add some explanatory text to the category page.
 
-==== &lt;datatable2&gt; ====
+==== &lt;riskdata&gt; ====
 
-With '''&lt;datatable2&gt;''' tags, you display tabular data and optionally store it for use on other pages (or elsewhere on the same page). As a simple example, the following wikitext:
+With '''&lt;riskdata&gt;''' tags, you display tabular data and optionally store it for use on other pages (or elsewhere on the same page). As a simple example, the following wikitext:
 
 <pre>
-<datatable2 table="demo table" class="wikitable">
+<riskdata table="demo table" class="wikitable">
 <head>
 |-
 ! Page
@@ -24,7 +24,7 @@ With '''&lt;datatable2&gt;''' tags, you display tabular data and optionally stor
 </head>
 {{FULLPAGENAME}}|interesting page|extension description
 [[MW:Manual:Contents{{!}}Manual]]|very interesting page|manual page
-</datatable2>
+</riskdata>
 </pre>
 
 will display
@@ -49,21 +49,21 @@ The <code>table</code> argument tells the extension to store the data for later 
 We can demonstrate some more features with a similar example:
 
 <pre>
-<datatable2 table="another demo"
+<riskdata table="another demo"
 columns="page|rating|type"
 fs=";">
 <template>
 '''{{{page}}}''': ''{{{rating}}}'' - {{{type}}}
 </template>
 <!-- one-line comments are possible -->
-Extension:DataTable2;interesting page;extension description
+Extension:RiskData;interesting page;extension description
 [[MW:Manual:Contents|Manual]];very interesting page;manual page
-</datatable2>
+</riskdata>
 </pre>
 
 This will display
 
-'''Extension:DataTable2''': ''interesting page'' - extension description
+'''Extension:RiskData''': ''interesting page'' - extension description
 
 '''[[MW:Manual:Contents|Manual]]''': ''very interesting page'' - manual page
 
@@ -71,7 +71,7 @@ This time, each record is formatted using template code provided in a <code>&lt;
 
 Furthermore, a different field separator has been used, which allows to do without the <code><nowiki>{{!}}</nowiki></code> template. In the data, xml comments (&lt;!-- ... --&gt;) are detected and removed from each row. Comments spanning multiple rows and syntax errors (such as -- appearing inside comments) will not be detected.
 
-The following gives a complete list of possible arguments to the <code>&lt;datatable2&gt;</code> tag. All of them are optional.
+The following gives a complete list of possible arguments to the <code>&lt;riskdata&gt;</code> tag. All of them are optional.
 ; args
 : Additional arguments to pass to the template for each record, in the usual wiki syntax, i.e. pipe-separated. This can be useful if you use the <code>template</code> argument (see below) to use the same template in several tables and want to pass table-specific argument to the template.
 ; class
@@ -94,11 +94,11 @@ The following gives a complete list of possible arguments to the <code>&lt;datat
 
 When displaying data on a page, all pages where data are taken from are added to the list of used templates. This implies that a page will not be taken from a cache if underlying data have changed, and that the data source pages will be listed as if they were templates used on the page. Hence, in the edit preview, dependencies will be shown as "templates used on this page" (potentially including the page itself), and on the other hand, in the "What links here" page of data source page, all pages using this data will be shown as if they transcluded the page. Unfortunately, there is currently no wiki feature that allows to distinguish this kind of dependency from a normal template dependency.
 
-All pages using data from DataTable2 tables are added to the [[Help:Tracking_categories|tracking category]] defined by the system message <code>datatable2-consumer-category</code>. Furthermore, these pages will be added to individual tracking categories for each table used. The names of these tracking categories are created from the [[{{NAMESPACE}}:{{BASEPAGENAME}}#Messages|system message]] <code>datatable2-consumer-detail-category</code> (in your wiki's [[Manual:$wgLanguageCode|content language]]). You might decide to add some explanatory text to the category pages.
+All pages using data from RiskData tables are added to the [[Help:Tracking_categories|tracking category]] defined by the system message <code>riskdata-consumer-category</code>. Furthermore, these pages will be added to individual tracking categories for each table used. The names of these tracking categories are created from the [[{{NAMESPACE}}:{{BASEPAGENAME}}#Messages|system message]] <code>riskdata-consumer-detail-category</code> (in your wiki's [[Manual:$wgLanguageCode|content language]]). You might decide to add some explanatory text to the category pages.
 
 ==== &lt;dt2-showtable&gt; ====
 
-The '''&lt;dt2-showtable&gt;''' tag is very similar to the <code>&lt;datatable2&gt;</code> tag, with the difference that data are not given on the wikipage but read from a logical table previously created with a <code>&lt;datatable2&gt;</code> tag. Given the data specified above, an example could be:
+The '''&lt;dt2-showtable&gt;''' tag is very similar to the <code>&lt;riskdata&gt;</code> tag, with the difference that data are not given on the wikipage but read from a logical table previously created with a <code>&lt;riskdata&gt;</code> tag. Given the data specified above, an example could be:
 
 <pre>
 <dt2-showtable table="another demo" class="wikitable"
@@ -128,19 +128,19 @@ which will display:
 ! Type
 
 |-
-! Extension:DataTable2
+! Extension:RiskData
 | interesting page
 | extension description
 |}
 
-The possible arguments are the same as for &lt;datatable2&gt;, except that <code>table</code> is mandatory while <code>columns, fs</code> and <code>rs</code> do not apply. In addition, the following optional arguments can be given:
+The possible arguments are the same as for &lt;riskdata&gt;, except that <code>table</code> is mandatory while <code>columns, fs</code> and <code>rs</code> do not apply. In addition, the following optional arguments can be given:
 
 ; order-by
 : ORDER BY clause.
 ; where
 : WHERE clause.
 
-The WHERE and ORDER BY clauses work as if the data were stored in tables in your database backend, hence they obey the SQL syntax and semantic rules. But for reasons of security, they are parsed, and the extension checks that only column names and identifiers on the [[{{NAMESPACE}}:{{BASEPAGENAME}}#LocalSettings.php|white list <code>$wgDataTable2</code>]] are used, in order to avoid SQL injection. Furthermore, characters like the semicolon which are not needed in the clauses but can be used for SQL injection purposes are forbidden outside of quoted strings. An error message is displayed if the clause is not acceptable in this sense.
+The WHERE and ORDER BY clauses work as if the data were stored in tables in your database backend, hence they obey the SQL syntax and semantic rules. But for reasons of security, they are parsed, and the extension checks that only column names and identifiers on the [[{{NAMESPACE}}:{{BASEPAGENAME}}#LocalSettings.php|white list <code>$wgRiskData</code>]] are used, in order to avoid SQL injection. Furthermore, characters like the semicolon which are not needed in the clauses but can be used for SQL injection purposes are forbidden outside of quoted strings. An error message is displayed if the clause is not acceptable in this sense.
 
 In most cases you will provide a template to display the data records since the records contain, in addition to the data you entered, also some fields about the page where the data was stored. The following fields are currently available:
 
@@ -160,7 +160,7 @@ The '''dt2-expand''' parser function inserts a template which gets its input dat
 The parser function takes the following parameters, where the first three are mandatory:
 
 * The name of the ''template'' to expand.
-* The logical ''table'' defined with the <code>&lt;datatable2&gt;</code> tag where the data should be taken from.
+* The logical ''table'' defined with the <code>&lt;riskdata&gt;</code> tag where the data should be taken from.
 * The ''where'' clause that should select at most one record. If more then one record is found, an error message is displayed.
 * Optionally the ''default'' text to return if no data are found. It is expanded only if needed, so using a complex template here does not lead to performance issues if used for unexpected errors only.
 * Optionally further arguments that are appended as template arguments to the data selected from the database.
@@ -175,9 +175,9 @@ The parser function is used as follows:
 
 It takes the following parameters, where the first three are mandatory:
 
-* The logical ''table'' defined with the <code>&lt;datatable2&gt;</code> tag where the data should be taken from.
+* The logical ''table'' defined with the <code>&lt;riskdata&gt;</code> tag where the data should be taken from.
 * The ''where'' clause that should select at most one record. If more then one record is found, an error message is displayed.
-* The ''column'' name defined with the <code>&lt;datatable2&gt;</code> tag. The column field may be left blank, in which case data is cached for later usage with the [[#dt2-lastget|dt2-lastget]] parser function, but nothing is displayed.
+* The ''column'' name defined with the <code>&lt;riskdata&gt;</code> tag. The column field may be left blank, in which case data is cached for later usage with the [[#dt2-lastget|dt2-lastget]] parser function, but nothing is displayed.
 * Optionally the ''default'' text to return if no data are found. It is expanded only if needed, so using a complex template here does not lead to performance issues if used for unexpected errors only.
 
 ==== dt2-lastget ====
@@ -188,7 +188,7 @@ The '''dt2-lastget''' parser function displays data from the last record fetched
 
 The parser function takes the following parameters, where only the first one is mandatory:
 
-* The ''column'' name defined with the <code>[[#&lt;datatable2&gt;|&lt;datatable2&gt;]]</code> tag.
+* The ''column'' name defined with the <code>[[#&lt;riskdata&gt;|&lt;riskdata&gt;]]</code> tag.
 * Optionally the ''default'' text to return if no data are found. It is expanded only if needed, so using a complex template here does not lead to performance issues if used for unexpected errors only.
 
 Using <code>dt2-lastget</code> is much more efficient than invoking <code>dt2-get</code> twice. But be careful when using this parser function. It is wise to use it only in wikitext very close to the corresponding <code>[[#dt2-get|dt2-get]]</code> invocation since otherwise the wikitext becomes difficult to understand and error-prone.
@@ -197,12 +197,12 @@ Using <code>dt2-lastget</code> is much more efficient than invoking <code>dt2-ge
 
 Three special pages are provided to inspect the stored data:
 
-; [[Special:DataTable2Tables]]
-: Lists all logical tables defined with the extension. For each table, the number of contributing pages and the number of records are shown. The former links to [[Special:DataTable2Pages]], the latter to [[Special:DataTable2Data]].
-: This special page accepts one parameter, which can either be appended to the URL with a slash (e.g. Special:DataTable2Tables/Employees) or given as the REQUEST parameter <code>tablename</code>. The former takes precedence. The page will display tables whose names are greater or equal to this.
-; [[Special:DataTable2Pages]]
+; [[Special:RiskDataTables]]
+: Lists all logical tables defined with the extension. For each table, the number of contributing pages and the number of records are shown. The former links to [[Special:RiskDataPages]], the latter to [[Special:RiskDataData]].
+: This special page accepts one parameter, which can either be appended to the URL with a slash (e.g. Special:RiskDataTables/Employees) or given as the REQUEST parameter <code>tablename</code>. The former takes precedence. The page will display tables whose names are greater or equal to this.
+; [[Special:RiskDataPages]]
 : Lists all pages contributing to a table, listing for each page the number of contributed records.
-: This special page accepts two parameters, which can either be appended to the URL (e.g. Special:DataTable2Pages/Employees//Kampala) or given as the REQUEST parameters <code>tablename</code> and <code>pagename</code>. The former take precedence. The separator between parameters appended to the URL is configured with the global variable [[{{NAMESPACE}}:{{BASEPAGENAME}}#Configuration|$wgSpecialDataTable2PageParSep]]. The page will display for the given table those pages whose titles are greater or equal to the given one (regardless of the namespace).
-; [[Special:DataTable2Data]]
+: This special page accepts two parameters, which can either be appended to the URL (e.g. Special:RiskDataPages/Employees//Kampala) or given as the REQUEST parameters <code>tablename</code> and <code>pagename</code>. The former take precedence. The separator between parameters appended to the URL is configured with the global variable [[{{NAMESPACE}}:{{BASEPAGENAME}}#Configuration|$wgSpecialRiskDataPageParSep]]. The page will display for the given table those pages whose titles are greater or equal to the given one (regardless of the namespace).
+; [[Special:RiskDataData]]
 : Lists the records in a table.
-: This special page accepts three parameters, which can either be appended to the URL (e.g. Special:DataTable2Pages/Employees//Kampala//Smith) or given as the REQUEST parameters <code>tablename, pagename</code> and <code>data</code>. The former take precedence. The separator between parameters appended to the URL is configured with the global variable [[{{NAMESPACE}}:{{BASEPAGENAME}}#Configuration|$wgSpecialDataTable2PageParSep]]. The page will display for the given table and page (if specified) those records where the content of the first field is greater or equal to the given one.
+: This special page accepts three parameters, which can either be appended to the URL (e.g. Special:RiskDataPages/Employees//Kampala//Smith) or given as the REQUEST parameters <code>tablename, pagename</code> and <code>data</code>. The former take precedence. The separator between parameters appended to the URL is configured with the global variable [[{{NAMESPACE}}:{{BASEPAGENAME}}#Configuration|$wgSpecialRiskDataPageParSep]]. The page will display for the given table and page (if specified) those records where the content of the first field is greater or equal to the given one.

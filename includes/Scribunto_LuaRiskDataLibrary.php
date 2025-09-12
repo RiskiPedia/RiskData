@@ -2,24 +2,24 @@
 
 /**
  * @brief [Scribunto](https://www.mediawiki.org/wiki/Extension:Scribunto)
- * Lua library for the @ref Extensions-DataTable2.
+ * Lua library for the @ref Extensions-RiskData.
  *
  * @file
  *
  * @ingroup Extensions
- * @ingroup Extensions-DataTable2
+ * @ingroup Extensions-RiskData
  *
  * @author [RV1971](https://www.mediawiki.org/wiki/User:RV1971)
  */
 
 /**
  * @brief [Scribunto](https://www.mediawiki.org/wiki/Extension:Scribunto)
- * Lua library for the @ref Extensions-DataTable2.
+ * Lua library for the @ref Extensions-RiskData.
  *
- * @ingroup Extensions-DataTable2
+ * @ingroup Extensions-RiskData
  */
 
-class Scribunto_LuaDataTable2Library extends Scribunto_LuaLibraryBase {
+class Scribunto_LuaRiskDataLibrary extends Scribunto_LuaLibraryBase {
 
 	/* == private data members == */
 
@@ -37,12 +37,12 @@ class Scribunto_LuaDataTable2Library extends Scribunto_LuaLibraryBase {
 	public function __construct( $engine ) {
 		parent::__construct( $engine );
 
-		$this->database_ = new DataTable2Database;
+		$this->database_ = new RiskDataDatabase;
 	}
 
 	/* == accessors == */
 
-	/// Get the instance of DataTable2Database.
+	/// Get the instance of RiskDataDatabase.
 	public function getDatabase() {
 		return $this->database_;
 	}
@@ -56,7 +56,7 @@ class Scribunto_LuaDataTable2Library extends Scribunto_LuaLibraryBase {
 		];
 
 		$this->getEngine()->registerInterface(
-			__DIR__ . '/../lua/DataTable2.lua',
+			__DIR__ . '/../lua/RiskData.lua',
 			$lib, [] );
 	}
 
@@ -80,7 +80,7 @@ class Scribunto_LuaDataTable2Library extends Scribunto_LuaLibraryBase {
 		$this->incrementExpensiveFunctionCount();
 
 		/** Get the records. */
-		$tableObj = DataTable2Parser::table2title( $table );
+		$tableObj = RiskDataParser::table2title( $table );
 
 		$records = $this->database_->select( $tableObj, $where, $orderBy,
 			$pages, __METHOD__ );
@@ -93,8 +93,8 @@ class Scribunto_LuaDataTable2Library extends Scribunto_LuaLibraryBase {
 				$records );
 		}
 
-		/** Call DataTable2::addDependencies_(). */
-		DataTable2::singleton()->addDependencies(
+		/** Call RiskData::addDependencies_(). */
+		RiskData::singleton()->addDependencies(
 			$this->getParser(), $pages, $tableObj );
 
 		return [ $records ];

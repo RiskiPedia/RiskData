@@ -5,7 +5,7 @@ use MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook;
 use MediaWiki\Page\Hook\ArticleDeleteHook;
 use MediaWiki\Page\Hook\RevisionFromEditCompleteHook;
 
-class DataTable2Hooks implements
+class RiskDataHooks implements
 	ArticleDeleteHook,
 	LoadExtensionSchemaUpdatesHook,
 	RevisionFromEditCompleteHook,
@@ -21,22 +21,22 @@ class DataTable2Hooks implements
 		\MediaWiki\Status\Status &$status,
 		$suppress
 	) {
-		DataTable2::singleton()->onArticleDelete( $wikiPage, $user, $reason, $error );
+		RiskData::singleton()->onArticleDelete( $wikiPage, $user, $reason, $error );
 	}
 
 	/** @inheritDoc */
 	public function onLoadExtensionSchemaUpdates( $updater ) {
-		DataTable2::singleton()->onLoadExtensionSchemaUpdates( $updater );
+		RiskData::singleton()->onLoadExtensionSchemaUpdates( $updater );
 	}
 
 	/** @inheritDoc */
 	public function onParserFirstCallInit( $parser ) {
-		DataTable2::singleton()->onParserFirstCallInit( $parser );
+		RiskData::singleton()->onParserFirstCallInit( $parser );
 	}
 
 	/** @inheritDoc */
 	public function onRevisionFromEditComplete( $wikiPage, $rev, $originalRevId, $user, &$tags ) {
-		DataTable2::singleton()->onRevisionFromEditComplete( $wikiPage, $rev, $originalRevId, $user );
+		RiskData::singleton()->onRevisionFromEditComplete( $wikiPage, $rev, $originalRevId, $user );
 	}
 
 }

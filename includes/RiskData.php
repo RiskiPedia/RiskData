@@ -1,12 +1,12 @@
 <?php
 
 /**
- * @brief Main code for the @ref Extensions-DataTable2.
+ * @brief Main code for the @ref Extensions-RiskData.
  *
  * @file
  *
  * @ingroup Extensions
- * @ingroup Extensions-DataTable2
+ * @ingroup Extensions-RiskData
  *
  * @author [RV1971](https://www.mediawiki.org/wiki/User:RV1971)
  */
@@ -16,29 +16,29 @@ use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\SlotRecord;
 
 /**
- * @brief Class implementing the @ref Extensions-DataTable2.
+ * @brief Class implementing the @ref Extensions-RiskData.
  *
- * @ingroup Extensions-DataTable2
+ * @ingroup Extensions-RiskData
  *
  * The diagram below shows the data flow:
  *
- * - For \<datatable2> tags, wikitext on a page is transformed into
- * PHP arrays using the DataTable2ParserWithRecords class, and the PHP
+ * - For \<riskdata> tags, wikitext on a page is transformed into
+ * PHP arrays using the RiskDataParserWithRecords class, and the PHP
  * arrays are saved to the database in the columns `dtd_01` etc. via
- * DataTable2Database::save().
+ * RiskDataDatabase::save().
  *
  * - For \<dt2-showtable> tags as well as the parser functions
  * dt2-expand and dt2-get, database data is transformed into PHP
- * arrays via DataTable2Database::select().
+ * arrays via RiskDataDatabase::select().
  *
- * - For \<datatable2> and \<dt2-showtable> tags, PHP arrays
- * are transformed into HTML output via DataTable2::renderRecords().
+ * - For \<riskdata> and \<dt2-showtable> tags, PHP arrays
+ * are transformed into HTML output via RiskData::renderRecords().
  *
  * - For the parser functions dt2-expand, dt2-get and dt2-lastget, PHP
  * arrays are transformed into wikitext output via renderExpand(),
  * renderGet() and renderLastGet().
  *
- * @note The \<datatable2> tag shows data obtained from the page text
+ * @note The \<riskdata> tag shows data obtained from the page text
  * (even when they are saved to the database) while all other tags and
  * parser functions show data from the database. This makes a
  * difference when using the preview.
@@ -56,7 +56,7 @@ use MediaWiki\Revision\SlotRecord;
  *
  * node [shape="ellipse",height=.5,fillcolor="#f9fafc",style=filled,fontcolor="#3d578c"];
  *
- * parse [label="DataTable2ParserWithRecords"];
+ * parse [label="RiskDataParserWithRecords"];
  * render [label="renderRecords"];
  * render2 [label="renderExpand,\nrenderGet, renderLastGet"];
  *
@@ -75,7 +75,7 @@ use MediaWiki\Revision\SlotRecord;
  * @enddot
  */
 
-class DataTable2 {
+class RiskData {
 	/* == public static methods == */
 
 	/// Get an instance of this class.
@@ -89,24 +89,24 @@ class DataTable2 {
 
 	/// Initialize this extension.
 	public static function init() {
-		global $wgDataTable2ReadSrc;
-		global $wgDataTable2WriteDest;
+		global $wgRiskDataReadSrc;
+		global $wgRiskDataWriteDest;
 
-		/** Set @ref $wgDataTable2ReadSrc to @ref
-		 *	$wgDataTable2WriteDest if unset.
+		/** Set @ref $wgRiskDataReadSrc to @ref
+		 *	$wgRiskDataWriteDest if unset.
 		 */
-		if ( !isset( $wgDataTable2ReadSrc ) ) {
-			$wgDataTable2ReadSrc = $wgDataTable2WriteDest;
+		if ( !isset( $wgRiskDataReadSrc ) ) {
+			$wgRiskDataReadSrc = $wgRiskDataWriteDest;
 		}
 
-		global $wgDataTable2MetaReadSrc;
-		global $wgDataTable2MetaWriteDest;
+		global $wgRiskDataMetaReadSrc;
+		global $wgRiskDataMetaWriteDest;
 
-		/** Set @ref $wgDataTable2MetaReadSrc to @ref
-		 *	$wgDataTable2MetaWriteDest if unset.
+		/** Set @ref $wgRiskDataMetaReadSrc to @ref
+		 *	$wgRiskDataMetaWriteDest if unset.
 		 */
-		if ( !isset( $wgDataTable2MetaReadSrc ) ) {
-			$wgDataTable2MetaReadSrc = $wgDataTable2MetaWriteDest;
+		if ( !isset( $wgRiskDataMetaReadSrc ) ) {
+			$wgRiskDataMetaReadSrc = $wgRiskDataMetaWriteDest;
 		}
 	}
 
@@ -147,12 +147,12 @@ class DataTable2 {
 	/* == magic methods == */
 
 	public function __construct() {
-		$this->database_ = new DataTable2Database;
+		$this->database_ = new RiskDataDatabase;
 	}
 
 	/* == accessors == */
 
-	/// Get the instance of DataTable2Database.
+	/// Get the instance of RiskDataDatabase.
 	public function getDatabase() {
 		return $this->database_;
 	}
@@ -178,7 +178,7 @@ class DataTable2 {
 	 */
 	public function onArticleDelete( WikiPage &$article, User &$user,
 		&$reason, &$error ) {
-		/** Call DataTable2Database::delete(). */
+		/** Call RiskDataDatabase::delete(). */
 		return $this->database_->delete( $article->getId(), __METHOD__ );
 	}
 
@@ -187,7 +187,7 @@ class DataTable2 {
 	 * (https://www.mediawiki.org/wiki/Manual:Hooks/LoadExtensionSchemaUpdates)
 	 * hook.
 	 *
-	 * Add the tables used to store DataTable2 data and metadata to
+	 * Add the tables used to store RiskData data and metadata to
 	 * the updater process.
 	 *
 	 * @param DatabaseUpdater $updater Object that updates the database.
@@ -195,10 +195,10 @@ class DataTable2 {
 	 * @return bool Always TRUE.
 	 */
 	public function onLoadExtensionSchemaUpdates( DatabaseUpdater $updater ) {
-		$updater->addExtensionTable( 'datatable2_data',
-			__DIR__ . '/../sql/datatable2_data.sql', true );
-		$updater->addExtensionTable( 'datatable2_meta',
-			__DIR__ . '/../sql/datatable2_meta.sql', true );
+		$updater->addExtensionTable( 'riskdata_data',
+			__DIR__ . '/../sql/riskdata_data.sql', true );
+		$updater->addExtensionTable( 'riskdata_meta',
+			__DIR__ . '/../sql/riskdata_meta.sql', true );
 
 		return true;
 	}
@@ -232,15 +232,15 @@ class DataTable2 {
 	 * href="https://www.mediawiki.org/wiki/Manual:Hooks/RevisionFromEditComplete">RevisionFromEditComplete</a>
 	 * hook, no data is stored in the database when the page has not
 	 * changed. Therefore, you should install this extension
-	 * <i>before</i> creating \<datatable2> tags in your wiki
+	 * <i>before</i> creating \<riskdata> tags in your wiki
 	 * pages. Otherwise, after installing the extension, you need to
-	 * modify each page containing \<datatable2> tags in order to
+	 * modify each page containing \<riskdata> tags in order to
 	 * get the data actually saved.
 	 */
 	public function onRevisionFromEditComplete(
 		$article, RevisionRecord $rev, $baseID, User $user
 	) {
-		/** Call DataTable2Database::save(). */
+		/** Call RiskDataDatabase::save(). */
 		return $this->database_->save(
 			$article, $rev->getContent( SlotRecord::MAIN )->getWikitextForTransclusion(),
 			__METHOD__
@@ -262,7 +262,7 @@ class DataTable2 {
 		 * extensions) and [parser function hooks]
 		 * (https://www.mediawiki.org/wiki/Manual:Parser functions).
 		 */
-		$parser->setHook( 'datatable2', [ $this, 'renderDataTable' ] );
+		$parser->setHook( 'riskdata', [ $this, 'renderDataTable' ] );
 		$parser->setHook( 'dt2-showtable', [ $this, 'renderShowTable' ] );
 
 		/** All parser functions get their arguments as PPNode
@@ -301,8 +301,8 @@ class DataTable2 {
 	 */
 	public function onScribuntoExternalLibraries( $engine,
 		array &$extraLibraries ) {
-		$extraLibraries['mw.ext.datatable2']
-			= 'Scribunto_LuaDataTable2Library';
+		$extraLibraries['mw.ext.riskdata']
+			= 'Scribunto_LuaRiskDataLibrary';
 
 		return true;
 	}
@@ -384,15 +384,15 @@ class DataTable2 {
 	}
 
 	/**
-	 * @brief Render a \<datatable2>
+	 * @brief Render a \<riskdata>
 	 * [tag](https://www.mediawiki.org/wiki/Manual:Tag extensions).
 	 *
-	 * @param string $input Text between the \<datatable2> and
-	 * \</datatable2> tags.
+	 * @param string $input Text between the \<riskdata> and
+	 * \</riskdata> tags.
 	 *
 	 * @param array $args Associative array of arguments. In the
 	 * wikipage, the arguments are entered as XML attributes of the
-	 * \<datatable2> tag.
+	 * \<riskdata> tag.
 	 *
 	 * @param Parser $parser The parent parser.
 	 *
@@ -400,16 +400,16 @@ class DataTable2 {
 	 *
 	 * @return string HTML text.
 	 *
-	 * @bug If several \<datatable2> tags provide data for the
+	 * @bug If several \<riskdata> tags provide data for the
 	 * same table and have different values for the <tt>columns</tt>
 	 * argument (including the case that some specify it while others
 	 * don't), the column names found in the database will be those of
-	 * the last \<datatable2> that was saved. Similarly, if
-	 * several \<datatable2> tags provide data for the same table
+	 * the last \<riskdata> that was saved. Similarly, if
+	 * several \<riskdata> tags provide data for the same table
 	 * without specifying <tt>columns</tt> and the number of used
 	 * columns differs between them, then the columns will be
 	 * numbered, but the number of column numbers will be that of the
-	 * last \<datatable2> saved. In both cases, the inconsistency
+	 * last \<riskdata> saved. In both cases, the inconsistency
 	 * will not be detected. To fix this, a warning message could be
 	 * displayed here if the column names specified differ from those
 	 * in the database. Such a warning should not be shown in the
@@ -425,45 +425,45 @@ class DataTable2 {
 		try {
                         /** table and column names are required **/
                         if (!isset($args['table'])) {
-                            throw new DataTable2Exception('datatable2-error-missing-tablename', 'Missing table attribute');
+                            throw new RiskDataException('riskdata-error-missing-tablename', 'Missing table attribute');
                         }
                         if (!isset($args['columns'])) {
-                            throw new DataTable2Exception('datatable2-error-missing-columns', 'Missing columns attribute');
+                            throw new RiskDataException('riskdata-error-missing-columns', 'Missing columns attribute');
                         }
 
-			/** Use DataTable2ParserWithRecords to parse the data in
+			/** Use RiskDataParserWithRecords to parse the data in
 			 *	$input.
 			 */
-			$dataParser = new DataTable2ParserWithRecords( $input, $args );
+			$dataParser = new RiskDataParserWithRecords( $input, $args );
 
                         $badRecords = $dataParser->getBadRecords();
 
                         if (count($badRecords) > 0) {
                             $msg = "";
                             foreach ($badRecords as $r) {
-                                $msg .= wfMessage('datatable2-error-bad-row', $r[0], $r[1], $r[2]) . " ";
+                                $msg .= wfMessage('riskdata-error-bad-row', $r[0], $r[1], $r[2]) . " ";
                             }
-                            throw new DataTable2Exception('datatable2-error-bad-data', $msg);
+                            throw new RiskDataException('riskdata-error-bad-data', $msg);
                         }
 
 			/** Add the page to the [tracking category]
 			 * (https://www.mediawiki.org/wiki/Help:Tracking_categories)
-			 * `datatable2-producer-category` if the data are saved.
+			 * `riskdata-producer-category` if the data are saved.
 			 *
 			 * @xrefitem userdoc "User Documentation" "User Documentation"
-			 * All pages storing data in DataTable2 tables are added
+			 * All pages storing data in RiskData tables are added
 			 * to the <a
 			 * href="https://www.mediawiki.org/wiki/Help:Tracking_categories">tracking
 			 * category</a> defined by the system message
-			 * <tt>datatable2-producer-category</tt>. You might decide
+			 * <tt>riskdata-producer-category</tt>. You might decide
 			 * to add some explanatory text to the category page.
 			 */
 			if ( isset( $args['table'] ) ) {
 				$parser->addTrackingCategory(
-					'datatable2-producer-category' );
+					'riskdata-producer-category' );
 			}
 
-			/** Call DataTable2::renderRecords() to create
+			/** Call RiskData::renderRecords() to create
 			 *	wikitext from the records.
 			 */
 			$wikitext = $this->renderRecords( $dataParser->getRecords(),
@@ -476,7 +476,7 @@ class DataTable2 {
 			return isset( $args['debug'] )
 				? "<pre>$wikitext</pre>"
 				: $parser->recursiveTagParse( $wikitext, $frame );
-		} catch ( DataTable2Exception $e ) {
+		} catch ( RiskDataException $e ) {
 			return $e->getHTML();
 		}
 	}
@@ -505,22 +505,22 @@ class DataTable2 {
 			 * (https://www.mediawiki.org/wiki/Manual:$wgExpensiveParserFunctionLimit).
 			 */
 			if ( !$parser->incrementExpensiveFunctionCount() ) {
-				throw new DataTable2Exception(
-					'datatable2-error-expensive-function' );
+				throw new RiskDataException(
+					'riskdata-error-expensive-function' );
 			}
 
-			/** @exception DataTable2Exception if no table specified. */
+			/** @exception RiskDataException if no table specified. */
 			if ( !$args['table'] ) {
-				throw new DataTable2Exception( 'datatable2-error-table-name',
+				throw new RiskDataException( 'riskdata-error-table-name',
 					'(empty string)' );
 			}
 
-			/** Use DataTable2Parser to parse the tag content, which
+			/** Use RiskDataParser to parse the tag content, which
 			 *	may contain a \<head> and/or a \<template> tag.
 			 */
-			$dataParser = new DataTable2Parser( $input, $args );
+			$dataParser = new RiskDataParser( $input, $args );
 
-			/** Call DataTable2Database::select() to select the records
+			/** Call RiskDataDatabase::select() to select the records
 			 *	from the database.
 			 */
 			$records = $this->database_->select(
@@ -529,16 +529,16 @@ class DataTable2 {
 				$dataParser->getArg( 'order-by' ),
 				$pages, __METHOD__ );
 
-			/** Call DataTable2::renderRecords() to create wikitext
+			/** Call RiskData::renderRecords() to create wikitext
 			 *	from the records.
 			 */
 			$wikitext = $this->renderRecords( $records, $dataParser,
 				$parser );
 
-			/** Call DataTable2::addDependencies(). */
+			/** Call RiskData::addDependencies(). */
 			if ( $pages ) {
 				$this->addDependencies( $parser, $pages,
-					DataTable2Parser::table2title(
+					RiskDataParser::table2title(
 						$dataParser->getArg( 'table' ) ) );
 			}
 
@@ -548,7 +548,7 @@ class DataTable2 {
 			return isset( $args['debug'] )
 				? "<pre>$wikitext</pre>"
 				: $parser->recursiveTagParse( $wikitext, $frame );
-		} catch ( DataTable2Exception $e ) {
+		} catch ( RiskDataException $e ) {
 			return $e->getHTML();
 		}
 	}
@@ -569,7 +569,7 @@ class DataTable2 {
 	 * @xrefitem userdoc "User Documentation" "User Documentation" The
 	 * <b>dt2-expand</b> parser function takes three or more arguments:
 	 * - The name of the <i>template</i> to expand.
-	 * - The <i>table</i> defined with the \<datatable2> tag where the
+	 * - The <i>table</i> defined with the \<riskdata> tag where the
 	 * data should be taken from.
 	 * - The <i>where</i> clause, that should select at most one record.
 	 * If more than one record is found, an error message is returned.
@@ -585,8 +585,8 @@ class DataTable2 {
 			 *	provided.
 			 */
 			if ( count( $args ) < 3 ) {
-				throw new DataTable2Exception(
-					'datatable2-error-too-few-args',
+				throw new RiskDataException(
+					'riskdata-error-too-few-args',
 					'dt2-get', count( $args ), 3 );
 			}
 
@@ -594,12 +594,12 @@ class DataTable2 {
 			 * (https://www.mediawiki.org/wiki/Manual:$wgExpensiveParserFunctionLimit).
 			 */
 			if ( !$parser->incrementExpensiveFunctionCount() ) {
-				throw new DataTable2Exception(
-					'datatable2-error-expensive-function' );
+				throw new RiskDataException(
+					'riskdata-error-expensive-function' );
 			}
 
 			$template = $frame->expand( $args[0] );
-			$table = DataTable2Parser::table2title(
+			$table = RiskDataParser::table2title(
 				$frame->expand( $args[1] ) );
 			$where = $frame->expand( $args[2] );
 
@@ -609,8 +609,8 @@ class DataTable2 {
 
 			/** Return error message if more than one record is found. */
 			if ( count( $data ) > 1 ) {
-				throw new DataTable2Exception(
-					'datatable2-error-multiple-records',
+				throw new RiskDataException(
+					'riskdata-error-multiple-records',
 					$table->getText(), htmlspecialchars( $where ),
 					count( $data ) );
 			}
@@ -622,7 +622,7 @@ class DataTable2 {
 				return isset( $args[3] ) ? $frame->expand( $args[3] ) : '';
 			}
 
-			/** Call DataTable2::addDependencies. */
+			/** Call RiskData::addDependencies. */
 			$this->addDependencies( $parser, $pages, $table );
 
 			/** Compose array of template arguments, appending further
@@ -641,7 +641,7 @@ class DataTable2 {
 						Title::newFromText( $template, NS_TEMPLATE ) )[0],
 					$parser->getPreprocessor()->newCustomFrame(
 						$templateArgs ) ), 'noparse' => false ];
-		} catch ( DataTable2Exception $e ) {
+		} catch ( RiskDataException $e ) {
 			return $e->getText();
 		}
 	}
@@ -667,10 +667,10 @@ class DataTable2 {
 	 * this in conditional constructs to test first whether there is a
 	 * record, and if so, to display its data in some way. The
 	 * parser function takes three or four arguments:
-	 * - The <i>table</i> defined with the \<datatable2> tag where the
+	 * - The <i>table</i> defined with the \<riskdata> tag where the
 	 * data should be taken from.
-	 * - The <i>column</i> name defined with the \<datatable2> tag; if
-	 * no column names have been defined in the \<datatable2> tag,
+	 * - The <i>column</i> name defined with the \<riskdata> tag; if
+	 * no column names have been defined in the \<riskdata> tag,
 	 * they are numbered starting with 1. The column field may be left
 	 * blank, in which case, data is retrieved for later usage with
 	 * the dt2-lastget parser function, but nothing is displayed.
@@ -687,8 +687,8 @@ class DataTable2 {
 			 *	provided.
 			 */
 			if ( count( $args ) < 3 ) {
-				throw new DataTable2Exception(
-					'datatable2-error-too-few-args',
+				throw new RiskDataException(
+					'riskdata-error-too-few-args',
 					'dt2-get', count( $args ), 3 );
 			}
 
@@ -696,11 +696,11 @@ class DataTable2 {
 			 * (https://www.mediawiki.org/wiki/Manual:$wgExpensiveParserFunctionLimit).
 			 */
 			if ( !$parser->incrementExpensiveFunctionCount() ) {
-				throw new DataTable2Exception(
-					'datatable2-error-expensive-function' );
+				throw new RiskDataException(
+					'riskdata-error-expensive-function' );
 			}
 
-			$table = DataTable2Parser::table2title(
+			$table = RiskDataParser::table2title(
 				$frame->expand( $args[0] ) );
 			$where = $frame->expand( $args[2] );
 
@@ -710,8 +710,8 @@ class DataTable2 {
 
 			/** Return error message if more than one record is found. */
 			if ( count( $data ) > 1 ) {
-				throw new DataTable2Exception(
-					'datatable2-error-multiple-records',
+				throw new RiskDataException(
+					'riskdata-error-multiple-records',
 					$table->getText(), htmlspecialchars( $where ),
 					count( $data ) );
 			}
@@ -725,7 +725,7 @@ class DataTable2 {
 				return isset( $args[3] ) ? $frame->expand( $args[3] ) : '';
 			}
 
-			/** Call DataTable2::addDependencies. */
+			/** Call RiskData::addDependencies. */
 			$this->addDependencies( $parser, $pages, $table );
 
 			/** Save result in @ref $lastGet_. */
@@ -746,7 +746,7 @@ class DataTable2 {
 			}
 
 			return '';
-		} catch ( DataTable2Exception $e ) {
+		} catch ( RiskDataException $e ) {
 			return $e->getText();
 		}
 	}
@@ -772,8 +772,8 @@ class DataTable2 {
 	 * If dt2-get has not yet been called or the last invocation has
 	 * not found any records, the default is returned. The parser
 	 * function takes one or two arguments:
-	 * - The <i>column</i> name defined with the \<datatable2> tag; if
-	 * no column names have been defined in the \<datatable2> tag,
+	 * - The <i>column</i> name defined with the \<riskdata> tag; if
+	 * no column names have been defined in the \<riskdata> tag,
 	 * they are numbered starting with 1.
 	 * - Optionally the <i>default text</i> to return if no data are found.
 	 * It is expanded only if needed, so using a complex template here does
@@ -783,8 +783,8 @@ class DataTable2 {
 		try {
 			/** Return error message if no arguments are provided. */
 			if ( !$args ) {
-				throw new DataTable2Exception(
-					'datatable2-error-too-few-args',
+				throw new RiskDataException(
+					'riskdata-error-too-few-args',
 					'dt2-lastget', count( $args ), 1 );
 			}
 
@@ -800,7 +800,7 @@ class DataTable2 {
 			 */
 			return [ $this->lastGet_[$frame->expand( $args[0] )],
 				'noparse' => false ];
-		} catch ( DataTable2Exception $e ) {
+		} catch ( RiskDataException $e ) {
 			return $e->getText();
 		}
 	}
@@ -811,15 +811,15 @@ class DataTable2 {
 	 * @param array[]|null $records Numerically-indexed array of associative
 	 * arrays, each of which represents a record.
 	 *
-	 * @param DataTable2Parser $dataParser Parser object for the
-	 * \<datatable2> or \<dt2-showtable> contents.
+	 * @param RiskDataParser $dataParser Parser object for the
+	 * \<riskdata> or \<dt2-showtable> contents.
 	 *
 	 * @param Parser $parser The parent parser.
 	 *
 	 * @return string Wikitext.
 	 */
 	public function renderRecords( $records,
-		DataTable2Parser $dataParser, Parser $parser ) {
+		RiskDataParser $dataParser, Parser $parser ) {
 		$wikitext = '';
 
 		$head = $dataParser->getHead();
@@ -857,7 +857,7 @@ class DataTable2 {
 			$args = null;
 		}
 
-		/** Call DataTable2::renderRecord() to create wikitext
+		/** Call RiskData::renderRecord() to create wikitext
 		 *	from each record.
 		 */
 		if ( $records ) {
@@ -977,14 +977,14 @@ class DataTable2 {
 	 * dependencies on pages defining data.
 	 *
 	 * @xrefitem userdoc "User Documentation" "User Documentation" All
-	 * pages using data from DataTable2 tables are added to the <a
+	 * pages using data from RiskData tables are added to the <a
 	 * href="https://www.mediawiki.org/wiki/Help:Tracking_categories">tracking
 	 * category</a> defined by the system message
-	 * <tt>datatable2-consumer-category</tt>. Furthermore, these pages
+	 * <tt>riskdata-consumer-category</tt>. Furthermore, these pages
 	 * will be added to individual tracking categories for each table
 	 * used. The names of these tracking categories are created from
 	 * the system message
-	 * <tt>datatable2-consumer-detail-category</tt>. You might decide
+	 * <tt>riskdata-consumer-detail-category</tt>. You might decide
 	 * to add some explanatory text to the category pages. As usual,
 	 * all tracking categories can be disabled by setting the
 	 * respective message to a single dash.
@@ -1004,16 +1004,16 @@ class DataTable2 {
 		Title $table ) {
 		/** Add this page to the [tracking category]
 		 * (https://www.mediawiki.org/wiki/Help:Tracking_categories)
-		 * defined by the message `datatable2-consumer-category`.
+		 * defined by the message `riskdata-consumer-category`.
 		 */
-		$parser->addTrackingCategory( 'datatable2-consumer-category' );
+		$parser->addTrackingCategory( 'riskdata-consumer-category' );
 
 		/** Add to the detail tracking category created from the
-		 *	message `datatable2-consumer-detail-category` unless
+		 *	message `riskdata-consumer-detail-category` unless
 		 *	that message is a single dash.
 		 */
 		$detailTrackingCategoryName = wfMessage(
-			'datatable2-consumer-detail-category', $table->getText() )
+			'riskdata-consumer-detail-category', $table->getText() )
 			->title( $parser->getTitle() )
 			->inContentLanguage()
 			->text();
@@ -1035,7 +1035,7 @@ class DataTable2 {
 					$defaultSort );
 			} else {
 				wfDebug( __METHOD__
-					. ": [[MediaWiki:datatable2-consumer-detail-category]] is not a valid title!\n" );
+					. ": [[MediaWiki:riskdata-consumer-detail-category]] is not a valid title!\n" );
 			}
 		}
 

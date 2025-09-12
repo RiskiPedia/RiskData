@@ -1,23 +1,23 @@
 <?php
 
 /**
- * @brief Exception handling for the @ref Extensions-DataTable2.
+ * @brief Exception handling for the @ref Extensions-RiskData.
  *
  * @file
  *
  * @ingroup Extensions
- * @ingroup Extensions-DataTable2
+ * @ingroup Extensions-RiskData
  *
  * @author [RV1971](https://www.mediawiki.org/wiki/User:RV1971)
  *
  */
 
 /**
- * @brief Exception class for the @ref Extensions-DataTable2.
+ * @brief Exception class for the @ref Extensions-RiskData.
  *
- * @ingroup Extensions-DataTable2
+ * @ingroup Extensions-RiskData
  */
-class DataTable2Exception extends MWException {
+class RiskDataException extends MWException {
 	/**
 	 * @brief Constructor.
 	 *
@@ -34,11 +34,11 @@ class DataTable2Exception extends MWException {
 
 	/// Return formatted message as html.
 	public function getHTML() {
-		return wfMessage( 'datatable2-error', $this->getMessage() )->parse();
+		return wfMessage( 'riskdata-error', $this->getMessage() )->parse();
 	}
 
 	/// Return formatted message as static wikitext.
 	public function getText() {
-		return wfMessage( 'datatable2-error', $this->getMessage() )->text();
+		return wfMessage( 'riskdata-error', $this->getMessage() )->text();
 	}
 }

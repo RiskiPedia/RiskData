@@ -2,12 +2,12 @@
 
 /**
  * @brief Base classes for special pages for the @ref
- * Extensions-DataTable2.
+ * Extensions-RiskData.
  *
  * @file
  *
  * @ingroup Extensions
- * @ingroup Extensions-DataTable2
+ * @ingroup Extensions-RiskData
  *
  * @author [RV1971](https://www.mediawiki.org/wiki/User:RV1971)
  *
@@ -15,14 +15,14 @@
  */
 
 /**
- * @brief Pager base class for the @ref Extensions-DataTable2.
+ * @brief Pager base class for the @ref Extensions-RiskData.
  *
- * @ingroup Extensions-DataTable2
+ * @ingroup Extensions-RiskData
  *
  * @sa [MediaWiki Manual:Pager.php]
  * (https://www.mediawiki.org/wiki/Manual:Pager.php)
  */
-abstract class DataTable2Pager extends AlphabeticPager {
+abstract class RiskDataPager extends AlphabeticPager {
 
 	/* == public data members == */
 
@@ -63,7 +63,7 @@ abstract class DataTable2Pager extends AlphabeticPager {
 		}
 
 		if ( $this->tablename !== null ) {
-			$this->tableDbKey = DataTable2Parser::table2title(
+			$this->tableDbKey = RiskDataParser::table2title(
 				$this->tablename )->getDBkey();
 		}
 
@@ -95,8 +95,8 @@ abstract class DataTable2Pager extends AlphabeticPager {
 		return Xml::openElement( 'form',
 			[ 'method' => 'get',
 				'action' => $this->getConfig()->get( 'Script' ),
-				'id' => "mw-datatable2$suffix-form" ] )
-			. Xml::fieldset( $this->msg( "datatable2$suffix-legend" )->text() )
+				'id' => "mw-riskdata$suffix-form" ] )
+			. Xml::fieldset( $this->msg( "riskdata$suffix-legend" )->text() )
 			. Html::hidden( 'title', $title )
 			. Html::hidden( 'limit', $this->mLimit )
 			. $content . ' '
@@ -108,11 +108,11 @@ abstract class DataTable2Pager extends AlphabeticPager {
 
 /**
  * @brief Special page base class for the @ref
- * Extensions-DataTable2.
+ * Extensions-RiskData.
  *
- * @ingroup Extensions-DataTable2
+ * @ingroup Extensions-RiskData
  */
-abstract class SpecialDataTable2 extends IncludableSpecialPage {
+abstract class SpecialRiskData extends IncludableSpecialPage {
 	/* == private data members == */
 
 	/// Whether this page needs a tablename to display data.
@@ -130,7 +130,7 @@ abstract class SpecialDataTable2 extends IncludableSpecialPage {
 	 * tablename to display data.
 	 */
 	public function __construct( $name, $needsTablename = true ) {
-		parent::__construct( $name, 'datatable2-specialpages' );
+		parent::__construct( $name, 'riskdata-specialpages' );
 
 		$this->needsTablename_ = $needsTablename;
 	}
@@ -157,7 +157,7 @@ abstract class SpecialDataTable2 extends IncludableSpecialPage {
 		 * special page.
 		 */
 		$pagerClass = "{$this->getName()}Pager";
-		/** @var DataTable2Pager $pager */
+		/** @var RiskDataPager $pager */
 		$pager = new $pagerClass( $this->getContext(), $par );
 
 		$html = '';
@@ -170,7 +170,7 @@ abstract class SpecialDataTable2 extends IncludableSpecialPage {
 
 		if ( $body ) {
 			$html .= $pager->getNavigationBar()
-				. DataTable2::sandboxParse( $body, $this->getUser() )
+				. RiskData::sandboxParse( $body, $this->getUser() )
 				. $pager->getNavigationBar();
 		} elseif ( isset( $pager->tablename )
 			|| !$this->needsTablename_ ) {

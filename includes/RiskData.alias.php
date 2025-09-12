@@ -3,12 +3,12 @@
 /**
  * @brief [Aliases]
  * (https://www.mediawiki.org/wiki/Manual:Special_pages#The_Aliases_File) for
- * the @ref Extensions-DataTable2.
+ * the @ref Extensions-RiskData.
  *
  * @file
  *
  * @ingroup Extensions
- * @ingroup Extensions-DataTable2
+ * @ingroup Extensions-RiskData
  */
 
 /// Aliases for special pages.
@@ -20,7 +20,7 @@ $specialPageAliases = [];
  * @author RV1971
  */
 $specialPageAliases['en'] = [
-	'DataTable2Data' => [ 'DataTable2Data' ],
-	'DataTable2Pages' => [ 'DataTable2Pages' ],
-	'DataTable2Tables' => [ 'DataTable2Tables' ]
+	'RiskDataData' => [ 'RiskDataData' ],
+	'RiskDataPages' => [ 'RiskDataPages' ],
+	'RiskDataTables' => [ 'RiskDataTables' ]
 ];
