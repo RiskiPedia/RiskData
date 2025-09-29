@@ -430,6 +430,9 @@ class RiskData {
                         if (!isset($args['columns'])) {
                             throw new RiskDataException('riskdata-error-missing-columns', 'Missing columns attribute');
                         }
+                        if (isset($args['hidden'])) {
+                            return "";
+                        }
 
 			/** Use RiskDataParserWithRecords to parse the data in
 			 *	$input.
