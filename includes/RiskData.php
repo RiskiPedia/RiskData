@@ -827,8 +827,8 @@ class RiskData {
 
 		$head = $dataParser->getHead();
                 if ( $head === null ) {
-                    // If no <head> section, display column names:
-                    $head = "";
+                    // If no <head> section, display table name and column names:
+                    $head = "|+ " . RiskDataParser::table2title( $parser->getTitle()->getPrefixedText() . ":" . $dataParser->getArg( 'table' ) ) . "\n";
                     foreach ( $dataParser->getColumns() as $c ) {
                         $head .= "!".$c."\n";
                     }
